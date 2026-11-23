@@ -1,6 +1,6 @@
 # SimulationLearning
 
-A Windows-friendly collection of six local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
+A Windows-friendly collection of seven local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
 
 > **Status:** Local infrastructure and regression tests have been implemented. Actual online download, visual fidelity, interactive 3D simulations, multi-language lessons, and offline coverage must still be checked on a networked Windows PC. "100% identical" is not guaranteed.
 
@@ -14,6 +14,7 @@ A Windows-friendly collection of six local-launch learning/simulation frontends.
 | Multimeter | [Electronics 101](https://electronics-101-six.vercel.app/multimeter) | http://127.0.0.1:8124/multimeter | `Multimeter/` |
 | Protocol | [Protocol Explorer](https://protocol-explorer-alpha.vercel.app/) | http://127.0.0.1:8125/ | `Protocol/` |
 | DesignedToScale | [Designed to Scale](https://designed-to-scale.vercel.app/#/) | http://127.0.0.1:8126/#/ | `DesignedToScale/` |
+| RoboticsLab | [Robotics Lab](https://robotics-lab-app.vercel.app/#uno) | http://127.0.0.1:8127/#uno | `RoboticsLab/` |
 
 ## Quick start (Windows)
 
@@ -23,7 +24,7 @@ A Windows-friendly collection of six local-launch learning/simulation frontends.
 4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
 5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
 
-To start all six servers at once, double-click `Launch_All.bat`. The six servers use different ports. Expect six CMD windows/browser tabs; downloading every site may take time the first time.
+To start all seven servers at once, double-click `Launch_All.bat`. The seven servers use different ports. Expect six CMD windows/browser tabs; downloading every site may take time the first time.
 
 ### ภาษาไทย — เริ่มใช้งาน
 
@@ -45,6 +46,7 @@ Python-SimulationLearning/
 ├── Multimeter/
 ├── Protocol/
 ├── DesignedToScale/
+├── RoboticsLab/
 │   ├── Launcher.bat
 │   ├── Update_Clone.bat
 │   ├── Check_Clone.bat
@@ -56,7 +58,8 @@ Python-SimulationLearning/
 ├── tools/
 │   └── clone_runtime.py     # common mirroring/check/server implementation
 ├── tests/
-│   └── test_runtime.py
+│   ├── test_runtime.py
+│   └── test_robotics.py
 ├── docs/
 │   ├── RELEASE_PROCESS.md
 │   └── TROUBLESHOOTING.md
@@ -81,6 +84,7 @@ python Arduino/mirror.py --jobs 8
 python RoverKit/verify_clone.py
 python Multimeter/server.py --port 8124
 python DesignedToScale/server.py --update
+python RoboticsLab/server.py --no-browser
 python -m unittest discover -s tests -v
 ```
 
@@ -94,11 +98,15 @@ python -m unittest discover -s tests -v
 
 ## Version control & releases
 
-- Toolkit version: **`1.0.0`**, tracked in root `VERSION` and `CHANGELOG.md`.
+- Toolkit version: **`1.1.0`**, tracked in root `VERSION` and `CHANGELOG.md`.
 - Recommended workflow: `main` = stable, `develop/vX.Y.Z` = development, `feature/*` = changes, `fix/*` = bug fixes; merge to main after tests. Release tags: `vX.Y.Z`.
 - `site/` is ignored intentionally: downloaded third-party content must not be pushed to a public repository without appropriate rights.
 - See [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md) for release commands and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for Windows help.
 
+## Robotics Lab validation
+
+Robotics Lab includes eight interactive 3D boards, a Workbench, lessons, quizzes and assembly. Its new port, local mirroring, cache validation, HTTP health endpoint, and restart behavior are covered by local fixture tests. **The upstream WebGL visuals and all browser-only interactions require separate comparison on your Windows PC; 100% parity is not independently verified.** See [`RoboticsLab/README.md`](RoboticsLab/README.md) for the full checklist.
+
 ## Source, attribution & license
 
-These six websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.
+These seven websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.

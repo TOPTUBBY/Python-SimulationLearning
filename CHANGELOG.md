@@ -2,6 +2,23 @@
 
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-11-23
+
+### Added
+- Robotics Lab as website #7 with a dedicated launcher at `http://127.0.0.1:8127/#uno`.
+- Standard `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, Python entrypoints and source configuration.
+- Added Robotics Lab to the global Launch/Update/Check scripts.
+- Added a board/WebGL/Workbench/Quiz/Assembly validation checklist and local fixture tests.
+
+### Changed
+- Updated bilingual README, project layout, release notes and version metadata.
+- Bumped shared runtime version to `1.1.0` without changing mirror functionality.
+
+### Notes
+- Approved by the user for repository integration.
+- Original website JavaScript, CSS, 3D models and other third-party assets remain excluded from Git.
+- Automated tests cover infrastructure only; actual visual parity still requires browser testing.
+
 ## [1.0.0] - 2026-11-23
 
 ### Added

@@ -1,0 +1,8 @@
+{
+  "id": "robotics-lab",
+  "name": "Robotics Lab",
+  "description": "Interactive 3D learning lab featuring eight development boards, workbench, lessons, quizzes, assembly and comparisons",
+  "source": "https://robotics-lab-app.vercel.app/",
+  "launch_path": "/#uno",
+  "port": 8127
+}

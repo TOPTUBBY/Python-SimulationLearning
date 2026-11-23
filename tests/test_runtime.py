@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from clone_runtime import asset_path, check_site, load_config, make_handler, Mirror
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECTS = ["ESP32", "Arduino", "RoverKit", "Multimeter", "Protocol", "DesignedToScale"]
+PROJECTS = ["ESP32", "Arduino", "RoverKit", "Multimeter", "Protocol", "DesignedToScale", "RoboticsLab"]
 
 
 class RuntimeTests(unittest.TestCase):
@@ -26,6 +26,7 @@ class RuntimeTests(unittest.TestCase):
             self.assertEqual(config["port"], 8121 + PROJECTS.index(project))
             ports.add(config["port"])
         self.assertEqual(load_config(ROOT / "Multimeter")["launch_path"], "/multimeter")
+        self.assertEqual(load_config(ROOT / "RoboticsLab")["launch_path"], "/#uno")
 
     def test_paths_block_traversal_and_other_hosts(self):
         self.assertEqual(str(asset_path("https://example.com/assets/a.js", "example.com")), "assets/a.js")
