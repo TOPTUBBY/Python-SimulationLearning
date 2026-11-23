@@ -24,7 +24,7 @@ A Windows-friendly collection of seven local-launch learning/simulation frontend
 4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
 5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
 
-To start all seven servers at once, double-click `Launch_All.bat`. The seven servers use different ports. Expect six CMD windows/browser tabs; downloading every site may take time the first time.
+To start all seven servers at once, double-click `Launch_All.bat`. The seven servers use different ports. Expect seven CMD windows/browser tabs; downloading every site may take time the first time.
 
 ### ภาษาไทย — เริ่มใช้งาน
 
