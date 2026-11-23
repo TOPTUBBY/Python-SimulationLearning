@@ -1,0 +1,8 @@
+{
+  "id": "protocol",
+  "name": "Protocol Explorer",
+  "description": "Networking protocols and animated packet exploration",
+  "source": "https://protocol-explorer-alpha.vercel.app/",
+  "launch_path": "/",
+  "port": 8125
+}

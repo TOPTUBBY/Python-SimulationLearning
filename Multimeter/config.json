@@ -1,0 +1,8 @@
+{
+  "id": "multimeter",
+  "name": "Multimeter / Electronics 101",
+  "description": "Electronics 101 interactive multimeter lesson",
+  "source": "https://electronics-101-six.vercel.app/",
+  "launch_path": "/multimeter",
+  "port": 8124
+}

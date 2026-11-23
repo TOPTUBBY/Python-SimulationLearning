@@ -1,0 +1,8 @@
+{
+  "id": "designedtoscale",
+  "name": "Designed to Scale",
+  "description": "System design foundations and architecture lessons",
+  "source": "https://designed-to-scale.vercel.app/",
+  "launch_path": "/#/",
+  "port": 8126
+}

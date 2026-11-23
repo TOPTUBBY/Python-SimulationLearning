@@ -1,0 +1,8 @@
+{
+  "id": "esp32",
+  "name": "ESP32",
+  "description": "Interactive 3D ESP32 lessons and circuits",
+  "source": "https://learn-esp32.vercel.app/",
+  "launch_path": "/#board",
+  "port": 8121
+}

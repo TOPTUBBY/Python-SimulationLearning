@@ -1,0 +1,8 @@
+{
+  "id": "roverkit",
+  "name": "RoverKit",
+  "description": "RoverKit driving and robotics learning",
+  "source": "https://roverkit.vercel.app/",
+  "launch_path": "/#drive",
+  "port": 8123
+}

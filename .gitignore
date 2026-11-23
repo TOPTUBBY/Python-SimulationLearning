@@ -1,0 +1,15 @@
+# Original third-party site bundles are downloaded on the user's device only.
+**/site/
+**/site.__staging__/
+**/site.__backup__/
+
+# Python/OS/logs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.log
+*.part
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
