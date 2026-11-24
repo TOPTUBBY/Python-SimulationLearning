@@ -15,8 +15,11 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[1]
+ROOT = REPO_ROOT / "Launcher-Server"
+PORTABLE_ROOT = REPO_ROOT / "Portable"
 sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(PORTABLE_ROOT))
 from clone_runtime import check_site, load_config, Mirror
 from esp_labs_runtime import (active_cache, check_site as check_esp_cache,
                               prepare_cache)
@@ -93,7 +96,7 @@ def generate_entrypoint(project, mode, directory):
         'from pathlib import Path\n'
         'import sys\n'
         'if not getattr(sys, "frozen", False):\n'
-        '    sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "tools"))\n'
+        '    sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "Launcher-Server" / "tools"))\n'\n        '    sys.path.insert(0, str(Path(__file__).resolve().parents[4] / "Portable"))\n'
         'from portable_launcher import main\n'
         'if __name__ == "__main__":\n'
         '    raise SystemExit(main(bundle_root=Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[4])),\n'
@@ -113,9 +116,10 @@ def build_command(project, cache, entry_path, dist_path, mode="bootstrap"):
     command = [sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
                "--onefile", "--windowed", "--name", output_name,
                "--distpath", str(dist_path),
-               "--workpath", str(ROOT / "build" / "portable" / project / "work"),
-               "--specpath", str(ROOT / "build" / "portable" / project),
+               "--workpath", str(PORTABLE_ROOT / "build" / project / "work"),
+               "--specpath", str(PORTABLE_ROOT / "build" / project),
                "--paths", str(module_dir),
+               "--paths", str(PORTABLE_ROOT),
                "--add-data", data_entry(project_dir / "config.json", project)]
     if project == "MoonLife":
         for item in ("thai_overlay.js", "thai_overlay.css", "thai_dictionary.json"):
@@ -160,7 +164,7 @@ def cli(argv=None):
                         help="Check caches and display future EXE input information (no build)")
     parser.add_argument("--strict", action="store_true",
                         help="Reject caches with mirror download warnings")
-    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "portable",
+    parser.add_argument("--output", type=Path, default=PORTABLE_ROOT / "EXE",
                         help="Directory for the final EXEs")
     args = parser.parse_args(argv)
     if args.refresh and not args.download_missing:
@@ -169,7 +173,7 @@ def cli(argv=None):
     if not args.check and sys.platform != "win32":
         print("ERROR: Windows EXEs must be built on Windows using PyInstaller.")
         return 2
-    entry_dir = ROOT / "build" / "portable" / "entries"
+    entry_dir = PORTABLE_ROOT / "build" / "entries"
     dist = args.output.resolve()
     if not args.check:
         entry_dir.mkdir(parents=True, exist_ok=True)
@@ -214,7 +218,7 @@ def cli(argv=None):
         entrypoint = generate_entrypoint(project, args.mode, entry_dir)
         command, name = build_command(project, cache, entrypoint, dist, args.mode)
         print("Building", name, "(Windows GUI, PyInstaller onefile)")
-        result = subprocess.run(command, cwd=ROOT, check=False)
+        result = subprocess.run(command, cwd=REPO_ROOT, check=False)
         exe = dist / (name + ".exe")
         if result.returncode or not exe.is_file():
             print("FAILED: PyInstaller result", result.returncode)

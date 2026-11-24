@@ -17,8 +17,10 @@ from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
-ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
+ROOT = REPO_ROOT / "Launcher-Server"
 sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(REPO_ROOT / "Portable"))
 import portable_launcher as app
 import build_portable as build
 from clone_runtime import load_config

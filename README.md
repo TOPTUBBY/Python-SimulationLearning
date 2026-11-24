@@ -1,133 +1,63 @@
-# SimulationLearning
+# Python-SimulationLearning — Launcher/Server & Portable EXE
 
-A Windows-friendly collection of ten local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
+**Version 1.6.0 | 10 websites | ports 8121–8130 | Thai language support**
 
-> **Status:** Local infrastructure and regression tests have been implemented. Actual online download, visual fidelity, interactive 3D simulations, multi-language lessons, and offline coverage must still be checked on a networked Windows PC. "100% identical" is not guaranteed.
+The project provides two ways to run the same interactive simulation/learning sites.
 
-## Portable EXE development branch
+| Section | Purpose | How to run |
+|---|---|---|
+| [Launcher-Server/](Launcher-Server/) | Python launchers, local web servers, mirror/update/check and Thai UI | Double-click `Launcher-Server/<Site>/Launcher.bat` (Python 3.8+ required) |
+| [Portable/](Portable/) | **Ten standalone Windows EXEs**, builder, tests and release downloader | Download [Portable/EXE/](Portable/EXE/) builds; double-click an EXE (no Python installation) |
 
-The separate [`feature/portable-exe-all-sites`](https://github.com/TOPTUBBY/Python-SimulationLearning/tree/feature/portable-exe-all-sites) branch adds **10 Windows GUI EXEs** (one file per website). Double-click to start a localhost server and open the original site in the browser, without installing Python on the recipient PC. The default Bootstrap EXE downloads original site assets to `%LOCALAPPDATA%\\SimulationLearning\\<Site>\\` on first launch and reuses verified local caches. Optional private Embedded builds can include a validated website cache inside a larger offline EXE. Existing `.bat` Launchers remain unchanged.
+### Quick start / วิธีใช้งาน
 
-**Build:** double-click `Build_Portable_All.bat` on Windows, or download Windows EXE workflow artifacts from the feature branch when the Actions build passes. See [Portable EXE Guide](docs/PORTABLE_EXE.md) and [Portable QA Checklist](docs/PORTABLE_QA_CHECKLIST.md). Not merged to main pending Windows validation.
+**Portable:** Download the [latest GitHub Release](https://github.com/TOPTUBBY/Python-SimulationLearning/releases/latest) containing `SimulationLearning_Portable_10_EXEs.zip`, or double-click `Portable/EXE/Download_All_EXEs.bat` after downloading this source repository. The batch downloader extracts all ten EXEs to `Portable/EXE/`. Double-click any EXE to open a localhost web server and browser automatically; close its control window to stop it. **Internet is needed on first launch**, because EXEs are bootstrap builds: original website assets are downloaded to `%LOCALAPPDATA%\SimulationLearning\<Site>\` on your machine.
 
-## Sites & fixed ports
+**Launcher/Server:** Install Python 3.8+, download the entire repository, then double-click `Launcher-Server/ESP32/Launcher.bat` (or another website). Shared code lives in `Launcher-Server/tools/` and Thai dictionaries in `Launcher-Server/localization/`. Run `Launcher-Server/Launch_All.bat` to start ten local sites.
 
-| Project | Original website | Local address | Folder |
-|---|---|---|---|
-| ESP32 | [Learn ESP32](https://learn-esp32.vercel.app/#board) | http://127.0.0.1:8121/#board | `ESP32/` |
-| Arduino | [Learn Arduino](https://learn-arduino-red.vercel.app/#board) | http://127.0.0.1:8122/#board | `Arduino/` |
-| RoverKit | [RoverKit](https://roverkit.vercel.app/#drive) | http://127.0.0.1:8123/#drive | `RoverKit/` |
-| Multimeter | [Electronics 101](https://electronics-101-six.vercel.app/multimeter) | http://127.0.0.1:8124/multimeter | `Multimeter/` |
-| Protocol | [Protocol Explorer](https://protocol-explorer-alpha.vercel.app/) | http://127.0.0.1:8125/ | `Protocol/` |
-| DesignedToScale | [Designed to Scale](https://designed-to-scale.vercel.app/#/) | http://127.0.0.1:8126/#/ | `DesignedToScale/` |
-| RoboticsLab | [Robotics Lab](https://robotics-lab-app.vercel.app/#uno) | http://127.0.0.1:8127/#uno | `RoboticsLab/` |
-| ByteSizedAlgorithms | [Byte-Sized Algorithms](https://byte-sized-algorithms.vercel.app/#/big-o/1) | http://127.0.0.1:8128/#/big-o/1 | `ByteSizedAlgorithms/` |
-| MoonLife | [Moon Life](https://project-moon-life.vercel.app/) | http://127.0.0.1:8129/ | `MoonLife/` |
-| ESP32Labs | [ESP32-S3 Bench Guide](https://ionloft.com/esp-labs/#/?lang=en) | http://127.0.0.1:8130/esp-labs/#/?lang=en | `ESP32Labs/` |
+**Build your own EXEs:** On Windows, run `Portable/Build_Portable_All.bat`. Built programs go to `Portable/EXE/`. A GitHub Actions workflow builds, smoke-tests and publishes the ten standalone apps in release assets; compiled binaries are intentionally **not committed to Git history**.
 
-## Thai UI — v1.5.0
+### Websites and assigned ports
 
-**New:** Thai / Original language picker for the first eight websites (ports 8121–8128). Moon Life (8129) already has its own Thai overlay. ESP32 Labs (8130) now offers a Thai / Original picker with Thai shown by default; the first nine sites retain their earlier behavior. The picker is independent of upstream site code and does not modify downloaded assets.
+| Site | Port | Original website |
+|---|---:|---|
+| ESP32 | 8121 | https://learn-esp32.vercel.app/#board |
+| Arduino | 8122 | https://learn-arduino-red.vercel.app/#board |
+| RoverKit | 8123 | https://roverkit.vercel.app/#drive |
+| Multimeter | 8124 | https://electronics-101-six.vercel.app/multimeter |
+| Protocol Explorer | 8125 | https://protocol-explorer-alpha.vercel.app/ |
+| Designed to Scale | 8126 | https://designed-to-scale.vercel.app/#/ |
+| Robotics Lab | 8127 | https://robotics-lab-app.vercel.app/#uno |
+| Byte-Sized Algorithms | 8128 | https://byte-sized-algorithms.vercel.app/#/big-o/1 |
+| Moon Life | 8129 | https://project-moon-life.vercel.app/ |
+| ESP32 Labs | 8130 | https://ionloft.com/esp-labs/#/?lang=en |
 
-Choose `TH · ไทย` at the bottom-right. Local dictionaries cover common controls and site-specific topics. The optional **online translation switch is OFF by default** to avoid sending displayed text to an external service without your choice. When enabled, unseen text is translated via Google Translate and cached locally. Switching back to `Original` restores the displayed source language. No translation applies to code, editable inputs, numeric readouts or text rendered directly inside Canvas/WebGL.
-
-**Validation:** see [`THAI_TEST_CHECKLIST.md`](THAI_TEST_CHECKLIST.md). The local fixture tests pass; complete visual/function parity and translation of every sentence cannot be guaranteed without browser testing against original sites.
-
-## Quick start (Windows)
-
-1. Install **Python 3.8+** from [python.org](https://www.python.org/downloads/windows/) and select **Add Python to PATH**. No pip packages or Node.js are required.
-2. Clone the repository or download its ZIP from GitHub, then extract it while retaining the shared `tools/` and `localization/` folders.
-3. Double-click `ESP32/Launcher.bat` (or another project's `Launcher.bat`). On its **first launch**, it downloads that site's public JavaScript, CSS, models and other referenced assets to that project's local ignored `site/` directory. Internet access is required.
-4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
-5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
-
-To start all ten servers at once, double-click `Launch_All.bat`. The ten servers use different ports. Expect ten CMD windows/browser tabs; downloading every site may take time the first time.
-
-### ภาษาไทย — เริ่มใช้งาน
-
-1. ติดตั้ง **Python 3.8 ขึ้นไป** โดยเลือก `Add Python to PATH` (ไม่ต้องติดตั้งไลบรารีเสริม)
-2. ดาวน์โหลด ZIP รุ่นล่าสุดจาก GitHub หรือใช้ `git clone` แล้วแตกไฟล์โดย **คงโครงสร้างทุกโฟลเดอร์ไว้** เพราะ `tools/` และ `localization/` เป็นส่วนกลาง
-3. ดับเบิลคลิก `Launcher.bat` ในโฟลเดอร์เว็บที่ต้องการ เช่น `ESP32/Launcher.bat` ระบบจะดาวน์โหลดไฟล์ต้นฉบับเข้ามาใน `site/` เมื่อใช้งานครั้งแรก (ต้องมีอินเทอร์เน็ต)
-4. หลังดาวน์โหลดเสร็จ เว็บจะเปิดเองที่พอร์ตของโครงการนั้น เปิดหน้าต่าง CMD ทิ้งไว้ระหว่างใช้งาน และปิดหน้าต่างเพื่อหยุด Server
-5. กด `Update_Clone.bat` เมื่อต้องการอัปเดตไฟล์จากต้นฉบับ และ `Check_Clone.bat` เมื่อต้องการตรวจสอบไฟล์สำคัญ
-
-**หมายเหตุ:** หากไม่มีไฟล์ `site/` และไม่มีอินเทอร์เน็ต Launcher จะแสดงข้อผิดพลาดและไม่เปิดหน้าเว็บว่าง; หลังมีแคชแล้วสามารถเปิดใหม่แบบไม่ดาวน์โหลดซ้ำได้ ฟีเจอร์บางอย่างอาจต้องใช้บริการออนไลน์ของต้นฉบับจึงจะใช้แบบ Offline ไม่ได้
-
-## Project layout
-
+### Folder structure
 ```text
 Python-SimulationLearning/
-├── ESP32/                 # port 8121
-├── Arduino/               # port 8122
-├── RoverKit/              # port 8123
-├── Multimeter/            # port 8124
-├── Protocol/              # port 8125
-├── DesignedToScale/       # port 8126
-├── RoboticsLab/           # port 8127
-├── ByteSizedAlgorithms/   # port 8128
-├── MoonLife/              # port 8129 (independent Thai support)
-├── ESP32Labs/             # port 8130 (subpath mirror, Thai UI)
-├── localization/
-│   ├── thai_overlay.js
-│   ├── thai_overlay.css
-│   ├── common_th.json
-│   └── sites/              # one dictionary per website
-├── tools/
-│   ├── clone_runtime.py   # original shared mirror/server
-│   ├── esp_labs_runtime.py # ESP32 Labs cache-slot/subpath adapter
-│   ├── moon_runtime.py    # existing Moon Life Thai feature
-│   └── thai_runtime.py    # Thai UI server wrapper
-├── tests/
-│   └── test_thai_ui.py    # Thai UI regression suite (plus existing tests)
-├── docs/
-├── THAI_TEST_CHECKLIST.md
-├── VERSION                 # 1.5.0
-├── Launch_All.bat
-├── Update_All.bat
-├── Check_All.bat
-└── README.md
+├── Launcher-Server/
+│   ├── ESP32/ Arduino/ RoverKit/ Multimeter/ Protocol/
+│   ├── DesignedToScale/ RoboticsLab/ ByteSizedAlgorithms/ MoonLife/ ESP32Labs/
+│   ├── tools/  localization/  tests/  docs/
+│   ├── Launch_All.bat  Update_All.bat  Check_All.bat
+│   └── README.md
+├── Portable/
+│   ├── EXE/                   # EXEs downloaded from a Release or built locally
+│   │   ├── Download_All_EXEs.bat
+│   │   └── README.md
+│   ├── build_portable.py  portable_launcher.py  package_exes.py
+│   ├── Build_Portable_All.bat  Check_Portable_Caches.bat
+│   ├── docs/  tests/
+│   └── README.md
+├── .github/workflows/build-portable-exes.yml
+├── README.md  CHANGELOG.md  VERSION  LICENSE
 ```
 
-Each website folder contains `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, `server.py`, `mirror.py`, `verify_clone.py`, and `config.json` plus per-site README. Its `site/` cache is created locally on first run and is **not included** in this archive.
+### Tests and limits
 
-## Commands
-
-Run from repository root (or click the corresponding BAT file):
-
-```powershell
-python ESP32/server.py --no-browser
-python Arduino/mirror.py --jobs 8
-python RoverKit/verify_clone.py
-python Multimeter/server.py --port 8124
-python DesignedToScale/server.py --update
-python RoboticsLab/server.py --no-browser
-python ESP32Labs/server.py --no-browser
-python -m unittest discover -s tests -v
+```bash
+python -m unittest discover -s Launcher-Server/tests -v
+python -m unittest discover -s Portable/tests -v
 ```
 
-### ESP32 Labs (port 8130): Windows-safe cache management
-
-The new ESP32 Labs adapter preserves the upstream `/esp-labs/` subpath and adds a display-only Thai language overlay. Following the approved rc.3 hotfix, a verified `site.__staging__/` cache is served directly without copying or renaming hundreds of files. Explicit updates download into an inactive slot (`site.__next__/` or `site.__staging__/`) and select it using the small `site.__active__.json` marker. If an update fails, the last verified cache remains available. See [ESP32 Labs instructions](ESP32Labs/README.md) and [test checklist](ESP32Labs/TEST_CHECKLIST.md).
-
-### How updates work
-
-- Standard sites stage downloads before replacing the active cache. ESP32 Labs uses its verified-cache-slot approach described above. Failed updates retain the last verified cache.
-- Unresolved/lazy dynamic assets may be fetched from the original public site on demand while online.
-- `Check_Clone.bat` checks key local files, **not** image-perfect accuracy or all runtime features.
-- If the original website changes its bundler, requires authentication, blocks mirroring or serves assets from a third-party host, some content may not work offline.
-- Port bindings are localhost-only (`127.0.0.1`), not publicly accessible from other network devices.
-
-## Version control & releases
-
-- Current stable toolkit version: **`1.5.0`** (`VERSION`). Thai language overlays are available across all ten websites (Moon Life retains its independent implementation).
-- Recommended workflow: `main` = stable, `develop/vX.Y.Z` = development, `feature/*` = changes, `fix/*` = bug fixes; merge to main after tests. Release tags: `vX.Y.Z`.
-- `site/` is ignored intentionally: downloaded third-party content must not be pushed to a public repository without appropriate rights.
-- See [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md) for release commands and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for Windows help.
-
-## Robotics Lab quality checks
-
-Robotics Lab features 3D/WebGL boards, Workbench, lessons, quizzes and assembly. Its local launcher, mirroring, startup, health endpoint and restart were tested with offline fixtures. **Visual/functional equivalence of the original WebGL experience has not been independently verified**. Compare the local site with upstream and follow the checklist in [`RoboticsLab/README.md`](RoboticsLab/README.md).
-
-## Source, attribution & license
-
-These ten websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.
+The original website's 3D content, lessons, scripts and models are **not packaged in the bootstrap EXEs or uploaded to this source repository**. They remain subject to their original authors' rights; the MIT toolkit license does not cover them. Thai translations cover many UI labels but not all Canvas/WebGL or dynamically generated text. Full browser parity and offline behavior must be tested per site.

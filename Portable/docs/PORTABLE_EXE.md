@@ -1,10 +1,10 @@
 # SimulationLearning Portable EXE — 10 one-file Windows apps
 
-**Branch:** [`feature/portable-exe-all-sites`](https://github.com/TOPTUBBY/Python-SimulationLearning/tree/feature/portable-exe-all-sites)
+**Branch:** [`main`](https://github.com/TOPTUBBY/Python-SimulationLearning/tree/main)
 
 ## Concept / แนวคิด
 
-This is a separate development branch. **The 10 existing Python launchers stay unchanged.** The new Windows GUI application has an embedded Python runtime and starts a localhost HTTP server in the background. It opens the original website user interface in Microsoft Edge/Chrome; no CMD window or Python installation is required **on the recipient PC**. Closing the small control window stops the server.
+Portable is integrated into `main`. The Python launchers remain available under `Launcher-Server/`. The new Windows GUI application has an embedded Python runtime and starts a localhost HTTP server in the background. It opens the original website user interface in Microsoft Edge/Chrome; no CMD window or Python installation is required **on the recipient PC**. Closing the small control window stops the server.
 
 โปรแกรมแยกออกเป็น EXE **1 ไฟล์ต่อ 1 เว็บไซต์** รวม 10 ไฟล์ ผู้ใช้ดับเบิลคลิก EXE แล้วเปิดหน้าเว็บใน Browser ได้เอง โดยไม่ต้องลง Python ที่เครื่องผู้ใช้ การปิดหน้าต่างควบคุมจะหยุด Server
 
@@ -31,9 +31,9 @@ This is a separate development branch. **The 10 existing Python launchers stay u
 
 Builder requirements: **Windows 10/11 64-bit**, Python 3.8+ and an internet connection to install PyInstaller. Recipients do **not** need Python or PyInstaller.
 
-1. Clone/download the complete repository and switch to `feature/portable-exe-all-sites`.
-2. Double-click **`Build_Portable_All.bat`**. The build PC installs PyInstaller if needed.
-3. Find ten standalone EXEs in `dist/portable/` and a JSON checksum report in the same folder.
+1. Clone/download the complete repository and switch to `main`.
+2. Double-click **`Portable/Build_Portable_All.bat`**. The build PC installs PyInstaller if needed.
+3. Find ten standalone EXEs in `Portable/EXE/` and a JSON checksum report in the same folder.
 4. Share *Bootstrap* EXEs individually. Recipients double-click the file, let first-run download finish, then their browser opens automatically.
 
 ### Advanced commands

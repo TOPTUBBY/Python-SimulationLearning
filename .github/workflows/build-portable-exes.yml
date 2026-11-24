@@ -2,17 +2,10 @@ name: Build Portable Windows EXEs (10 websites)
 
 on:
   push:
-    branches:
-      - feature/portable-exe-all-sites
+    branches: [main]
     paths:
-      - portable/**
-      - tools/portable_launcher.py
-      - tools/build_portable.py
-      - tools/clone_runtime.py
-      - tools/thai_runtime.py
-      - tools/moon_runtime.py
-      - tools/esp_labs_runtime.py
-      - tests/test_portable_exe.py
+      - Portable/**
+      - Launcher-Server/**
       - .github/workflows/build-portable-exes.yml
   workflow_dispatch:
 
@@ -21,15 +14,17 @@ permissions:
 
 jobs:
   validate:
-    name: Validate portable implementation
+    name: Validate Launcher and Portable
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Portable tests (no vendor assets)
-        run: python -m unittest discover -s tests -p test_portable_exe.py -v
+      - name: Test source and portable runtimes
+        run: |
+          python -m unittest discover -s Launcher-Server/tests -v
+          python -m unittest discover -s Portable/tests -v
 
   build:
     name: EXE · ${{ matrix.project }}
@@ -38,47 +33,80 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project:
-          - ESP32
-          - Arduino
-          - RoverKit
-          - Multimeter
-          - Protocol
-          - DesignedToScale
-          - RoboticsLab
-          - ByteSizedAlgorithms
-          - MoonLife
-          - ESP32Labs
+        project: [ESP32, Arduino, RoverKit, Multimeter, Protocol, DesignedToScale, RoboticsLab, ByteSizedAlgorithms, MoonLife, ESP32Labs]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x64
-      - name: Install Windows one-file build tool
+      - name: Install PyInstaller
         run: python -m pip install "pyinstaller>=6,<7"
-      - name: Build bootstrap EXE (original assets not bundled)
+      - name: Build bootstrap EXE
         shell: pwsh
-        run: python tools/build_portable.py --site "${{ matrix.project }}" --mode bootstrap
-      - name: Smoke-test the actual frozen EXE (offline, no vendor assets)
+        run: python Portable/build_portable.py --site "${{ matrix.project }}" --mode bootstrap
+      - name: Smoke test actual frozen EXE
         shell: pwsh
         run: |
           $project = "${{ matrix.project }}"
-          $exe = (Get-ChildItem "dist/portable/*.exe" | Select-Object -First 1).FullName
+          $exe = (Get-ChildItem "Portable/EXE/*.exe" | Select-Object -First 1).FullName
           $output = Join-Path $env:RUNNER_TEMP ("portable-smoke-" + $project + ".json")
           $process = Start-Process -FilePath $exe -ArgumentList "--self-test-output `"$output`"" -Wait -PassThru
-          if ($process.ExitCode -ne 0) { throw "EXE failed startup smoke-test: $project (exit $($process.ExitCode))" }
-          if (-not (Test-Path -LiteralPath $output)) { throw "EXE created no self-test output: $project" }
+          if ($process.ExitCode -ne 0) { throw "EXE startup smoke-test failed: $project" }
+          if (-not (Test-Path -LiteralPath $output)) { throw "EXE did not create smoke-test output: $project" }
           $result = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
           if (-not $result.ok -or -not $result.frozen -or $result.project -ne $project -or $result.mode -ne "bootstrap") {
-            throw "EXE identity/resources mismatch: $project $($result | ConvertTo-Json -Compress)"
+            throw "EXE project/resources mismatch: $project"
           }
-          if ($result.missing.Count -ne 0) { throw "EXE missing bundled resources: $project" }
-          Write-Host "PASS: frozen EXE starts, selects $project and loads packaged resources."
+          if ($result.missing.Count -ne 0) { throw "EXE missing bundled assets: $project" }
+          Write-Host "PASS: frozen EXE $project"
       - name: Upload standalone Windows EXE
         uses: actions/upload-artifact@v4
         with:
           name: SimulationLearning-${{ matrix.project }}-Portable-EXE
-          path: dist/portable/*.exe
+          path: Portable/EXE/*.exe
           if-no-files-found: error
           retention-days: 14
+
+  publish:
+    name: Publish ten EXEs as GitHub Release
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: SimulationLearning-*-Portable-EXE
+          path: Portable/EXE
+          merge-multiple: true
+      - name: Validate and bundle files
+        run: python Portable/package_exes.py --directory Portable/EXE --output Portable/SimulationLearning_Portable_10_EXEs.zip
+      - name: Upload binaries to Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="v$(tr -d '\r\n' < VERSION)"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --target "$GITHUB_SHA" --title "SimulationLearning $tag" --notes "Ten Windows bootstrap EXEs (original site assets download on first run)."
+          fi
+          gh release upload "$tag" Portable/EXE/*.exe Portable/SimulationLearning_Portable_10_EXEs.zip --clobber
+      - name: Delete superseded feature branch when safely merged
+        shell: bash
+        run: |
+          set -euo pipefail
+          old="feature/portable-exe-all-sites"
+          if git ls-remote --exit-code --heads origin "$old" >/dev/null 2>&1; then
+            git fetch origin "refs/heads/$old:refs/remotes/origin/$old"
+            if git merge-base --is-ancestor "origin/$old" "$GITHUB_SHA"; then
+              git push origin --delete "$old"
+            else
+              echo "Feature branch contains new work; preserving it."
+            fi
+          fi

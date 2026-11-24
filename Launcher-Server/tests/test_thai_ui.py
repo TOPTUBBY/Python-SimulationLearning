@@ -152,7 +152,7 @@ class ThaiUiTests(unittest.TestCase):
             finally:stop_server(server,worker)
 
     def test_10_release_version_and_stable_moonlife(self):
-        self.assertEqual((ROOT/'VERSION').read_text().strip(),'1.4.0')
+        self.assertEqual((ROOT.parent / 'VERSION').read_text().strip(), '1.6.0')
         self.assertIn('moon_runtime', (ROOT/'MoonLife/server.py').read_text())
         self.assertFalse((ROOT/'ESP32/site').exists())
         self.assertFalse((ROOT/'MoonLife/site').exists())

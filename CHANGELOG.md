@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.6.0] - 2026-11-24
+
+### Added
+- Consolidated the approved Portable EXE feature into the stable main codebase.
+- Organized two user-facing folders: `Launcher-Server/` and `Portable/` with `Portable/EXE/`.
+- Release downloader and EXE integrity/ZIP packaging utility.
+- GitHub Actions builds and smoke-tests ten bootstrap Windows EXEs, then publishes them as Release assets.
+
+### Changed
+- Preserved all ten websites, ports 8121–8130, Thai UI, and WinError 5-safe ESP32 Labs cache handling.
+- Updated source paths, documentation and test suite for the new folder structure.
+- Corrected portable builder paths while keeping site identity embedded in generated EXE entrypoints.
+
+### Notes
+- EXE binaries are distributed via GitHub Releases, not checked into Git history.
+- A combined downloadable ZIP can include both source folders and the ten prebuilt EXEs.
+- Python runtime/site asset regression tests passed locally; rebuilt Windows EXEs require CI smoke-tests.
+
+---
+
+# Changelog
+
 ## [Unreleased] — feature/portable-exe-all-sites (2026-11-24)
 
 ### Added (development only)

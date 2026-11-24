@@ -6,7 +6,7 @@ echo SimulationLearning - Portable EXE Builder (10 sites)
 echo ===================================================
 echo.
 echo Requirement: Windows + Python + internet on build PC.
-echo Output: dist\portable\SimulationLearning-*-*.exe
+echo Output: EXE\SimulationLearning-*-*.exe
 echo No Python is required on recipient PCs.
 echo Websites download on FIRST RUN on recipient PC.
 echo.
@@ -32,13 +32,13 @@ if errorlevel 1 (
     exit /b 1
   )
 )
-%PY% tools\build_portable.py --all --mode bootstrap
+%PY% build_portable.py --all --mode bootstrap
 set "CODE=%errorlevel%"
 echo.
 if not "%CODE%"=="0" (
   echo [WARN] Some EXEs could not be built. Review output and retry.
 ) else (
-  echo [OK] Check dist\portable for 10 standalone EXE files.
+  echo [OK] Check EXE for 10 standalone EXE files.
 )
 pause
 exit /b %CODE%

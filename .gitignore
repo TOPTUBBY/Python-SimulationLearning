@@ -26,3 +26,10 @@ dist/
 *.spec
 **/site.__next__/
 **/site.__active__.json
+
+# EXE binaries live in GitHub Releases rather than Git history
+Portable/EXE/*.exe
+Portable/EXE/*.zip
+Portable/EXE/*.json
+Portable/build/
+Portable/*.zip
