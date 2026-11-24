@@ -1,0 +1,215 @@
+"""Build 10 independently runnable Windows single-file EXEs from local caches.
+
+Run on Windows with Python + PyInstaller installed. Original website files are
+never committed to Git. Each site's existing local `site/` cache is embedded
+into one EXE at build time, using the original server and Thai UI modules.
+"""
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from clone_runtime import check_site, load_config, Mirror
+from esp_labs_runtime import (active_cache, check_site as check_esp_cache,
+                              prepare_cache)
+from portable_launcher import SITES
+
+
+def choose_cache(project):
+    directory = ROOT / project
+    if project == "ESP32Labs":
+        cache = active_cache(directory)
+        if cache is None:
+            return None
+        return cache if check_esp_cache(cache, verbose=False)[0] else None
+    for slot in ("site", "site.__staging__", "site.__next__"):
+        cache = directory / slot
+        if check_site(cache, verbose=False)[0]:
+            return cache
+    return None
+
+
+def download_cache(project, force=False):
+    cfg = load_config(ROOT / project)
+    if project == "ESP32Labs":
+        cache, updated = prepare_cache(cfg, ROOT / project, refresh=force)
+        return cache if cache is not None and (updated or not force) else None
+    project_dir = ROOT / project
+    cache = project_dir / "site.__staging__"
+    if force and cache.exists():
+        # Never remove a previously usable site cache during a refresh.
+        cache = project_dir / "site.__next__"
+    ok = Mirror(cfg, cache, jobs=12).run()
+    return cache if ok and check_site(cache, verbose=False)[0] else None
+
+
+def cache_metadata(project, cache):
+    cache = Path(cache)
+    files = [p for p in cache.rglob("*") if p.is_file()]
+    manifest = cache / ".clone-manifest.json"
+    try:
+        data = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        data = {}
+    return {
+        "project": project,
+        "source": load_config(ROOT / project)["source"],
+        "cache_directory": str(cache),
+        "files": len(files),
+        "bytes": sum(p.stat().st_size for p in files),
+        "mirror_warning_count": len(data.get("errors", [])),
+        "cache_manifest": data.get("downloaded_at", "unknown"),
+    }
+
+
+def data_entry(source, relative_target):
+    if not Path(source).exists():
+        raise FileNotFoundError(str(source))
+    # PyInstaller accepts Windows semicolon path separators; os.pathsep is
+    # ' ; ' on Windows, ' : ' on Linux (dry-run only on Linux).
+    return str(Path(source).resolve()) + os.pathsep + relative_target
+
+
+def build_command(project, cache, selection_path, dist_path, mode="bootstrap"):
+    module_dir = ROOT / "tools"
+    project_dir = ROOT / project
+    cfg = load_config(project_dir)
+    output_name = "SimulationLearning-" + project + "-" + str(cfg["port"])
+    if mode == "embedded":
+        output_name += "-Offline"
+    command = [sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean",
+               "--onefile", "--windowed", "--name", output_name,
+               "--distpath", str(dist_path),
+               "--workpath", str(ROOT / "build" / "portable" / project / "work"),
+               "--specpath", str(ROOT / "build" / "portable" / project),
+               "--paths", str(module_dir),
+               "--add-data", data_entry(project_dir / "config.json", project),
+               "--add-data", data_entry(selection_path, ".")]
+    if project == "MoonLife":
+        for item in ("thai_overlay.js", "thai_overlay.css", "thai_dictionary.json"):
+            command += ["--add-data", data_entry(project_dir / "translation" / item,
+                                                 "MoonLife/translation")]
+    else:
+        locale = ROOT / "localization"
+        for filename, destination in (
+            ("thai_overlay.js", "localization"),
+            ("thai_overlay.css", "localization"),
+            ("common_th.json", "localization"),
+        ):
+            command += ["--add-data", data_entry(locale / filename, destination)]
+        command += ["--add-data", data_entry(locale / "sites" / (cfg["id"] + ".json"),
+                                               "localization/sites")]
+    if mode == "embedded":
+        command += ["--add-data", data_entry(cache, project + "/site")]
+    command.append(str(ROOT / "portable" / "entry.py"))
+    return command, output_name
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def cli(argv=None):
+    parser = argparse.ArgumentParser(description="Build single-file Windows portable apps (10 sites)")
+    select = parser.add_mutually_exclusive_group(required=True)
+    select.add_argument("--all", action="store_true", help="Build all 10 EXEs")
+    select.add_argument("--site", choices=SITES, help="Build only one site's EXE")
+    parser.add_argument("--mode", choices=("bootstrap", "embedded"), default="bootstrap",
+                        help="bootstrap: EXE downloads website on first run; embedded: offline web files included")
+    parser.add_argument("--download-missing", action="store_true",
+                        help="Download required assets when the local site cache is absent")
+    parser.add_argument("--refresh", action="store_true",
+                        help="Download upstream assets even if the current cache is valid")
+    parser.add_argument("--check", action="store_true",
+                        help="Check caches and display future EXE input information (no build)")
+    parser.add_argument("--strict", action="store_true",
+                        help="Reject caches with mirror download warnings")
+    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "portable",
+                        help="Directory for the final EXEs")
+    args = parser.parse_args(argv)
+    if args.refresh and not args.download_missing:
+        parser.error("--refresh requires --download-missing")
+    projects = SITES if args.all else (args.site,)
+    if not args.check and sys.platform != "win32":
+        print("ERROR: Windows EXEs must be built on Windows using PyInstaller.")
+        return 2
+    selection_dir = ROOT / "build" / "portable" / "selections"
+    dist = args.output.resolve()
+    if not args.check:
+        selection_dir.mkdir(parents=True, exist_ok=True)
+        dist.mkdir(parents=True, exist_ok=True)
+    report = {"toolkit": "SimulationLearning", "build": "portable-exe",
+              "created_utc": datetime.now(timezone.utc).isoformat(), "items": [],
+              "status": "check-only" if args.check else "building"}
+    failures = 0
+    for project in projects:
+        print("\n" + "=" * 58)
+        print("PORTABLE:", project, "port", load_config(ROOT / project)["port"])
+        cache = choose_cache(project)
+        if args.download_missing and (cache is None or args.refresh) and not args.check:
+            print("Preparing cache from original public website...")
+            try:
+                cache = download_cache(project, force=args.refresh)
+            except Exception as exc:
+                print("Download error:", exc)
+                cache = choose_cache(project)
+        if cache is None and args.mode == "embedded":
+            print("MISSING validated cache. Run the site's Launcher.bat once or use --download-missing.")
+            report["items"].append({"project": project, "status": "cache-missing"})
+            failures += 1
+            continue
+        info = cache_metadata(project, cache) if cache else {"project": project,
+            "files": 0, "bytes": 0, "mirror_warning_count": 0,
+            "cache_manifest": "not bundled (first-run download)"}
+        info["package_mode"] = args.mode
+        print("Cache:", info["files"], "files, %.1f MiB" % (info["bytes"] / (1024 * 1024)))
+        if info["mirror_warning_count"]:
+            print("WARNING: original mirror reported", info["mirror_warning_count"],
+                  "asset warnings; full offline behavior must be tested")
+        if args.strict and info["mirror_warning_count"]:
+            info["status"] = "rejected: mirror warnings"
+            report["items"].append(info)
+            failures += 1
+            continue
+        if args.check:
+            info["status"] = "cache-ready" if cache else "bootstrap-ready-no-cache"
+            report["items"].append(info)
+            continue
+        selection = selection_dir / (project + ".json")
+        selection.write_text(json.dumps({"project": project, "mode": args.mode}) + "\n", encoding="utf-8")
+        command, name = build_command(project, cache, selection, dist, args.mode)
+        print("Building", name, "(Windows GUI, PyInstaller onefile)")
+        result = subprocess.run(command, cwd=ROOT, check=False)
+        exe = dist / (name + ".exe")
+        if result.returncode or not exe.is_file():
+            print("FAILED: PyInstaller result", result.returncode)
+            info["status"] = "build-failed"
+            failures += 1
+        else:
+            info.update({"status": "built", "exe": str(exe),
+                         "exe_bytes": exe.stat().st_size,
+                         "exe_sha256": sha256_file(exe)})
+            print("BUILT:", exe, "(%.1f MiB)" % (exe.stat().st_size / 1048576))
+        report["items"].append(info)
+    report["status"] = "failed" if failures else ("check-only" if args.check else "built")
+    if not args.check:
+        (dist / "portable-build-report.json").write_text(
+            json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print("\nSummary:", len(report["items"]) - failures, "ready,", failures, "failed")
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(cli())

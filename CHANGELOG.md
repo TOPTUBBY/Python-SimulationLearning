@@ -1,4 +1,19 @@
 # Changelog
+
+## [Unreleased] — feature/portable-exe-all-sites (2026-11-24)
+
+### Added (development only)
+- Windows Portable EXE launcher with GUI controller, loopback local HTTP server, automatic browser opening, and persistent per-user AppData.
+- Two packaging modes for all 10 sites: Bootstrap EXE (download public website assets on first run) and optional Embedded EXE (bundles a validated local site cache).
+- Single-file PyInstaller builder, Windows BAT commands, portable regression tests, Windows Actions build matrix, QA checklist, and release documentation.
+- Verified cache-slot reuse on first run without bulk rename/copy, maintaining Thai UI, Moon Life, and ESP32 Labs subfolder handling.
+
+### Notes
+- Branch only. Existing stable main remains v1.5.0.
+- Bootstrap EXEs do not redistribute third-party assets. Embedded EXEs require separate permission checks before redistribution.
+- Windows binary build and real-browser compatibility must be confirmed before stable merge.
+
+
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
 ## [1.5.0] - 2026-11-24

@@ -19,3 +19,10 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+
+# Portable EXE build outputs
+build/
+dist/
+*.spec
+**/site.__next__/
+**/site.__active__.json

@@ -4,6 +4,12 @@ A Windows-friendly collection of ten local-launch learning/simulation frontends.
 
 > **Status:** Local infrastructure and regression tests have been implemented. Actual online download, visual fidelity, interactive 3D simulations, multi-language lessons, and offline coverage must still be checked on a networked Windows PC. "100% identical" is not guaranteed.
 
+## Portable EXE development branch
+
+The separate [`feature/portable-exe-all-sites`](https://github.com/TOPTUBBY/Python-SimulationLearning/tree/feature/portable-exe-all-sites) branch adds **10 Windows GUI EXEs** (one file per website). Double-click to start a localhost server and open the original site in the browser, without installing Python on the recipient PC. The default Bootstrap EXE downloads original site assets to `%LOCALAPPDATA%\\SimulationLearning\\<Site>\\` on first launch and reuses verified local caches. Optional private Embedded builds can include a validated website cache inside a larger offline EXE. Existing `.bat` Launchers remain unchanged.
+
+**Build:** double-click `Build_Portable_All.bat` on Windows, or download Windows EXE workflow artifacts from the feature branch when the Actions build passes. See [Portable EXE Guide](docs/PORTABLE_EXE.md) and [Portable QA Checklist](docs/PORTABLE_QA_CHECKLIST.md). Not merged to main pending Windows validation.
+
 ## Sites & fixed ports
 
 | Project | Original website | Local address | Folder |
