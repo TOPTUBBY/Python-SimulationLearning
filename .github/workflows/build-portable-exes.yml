@@ -60,6 +60,21 @@ jobs:
       - name: Build bootstrap EXE (original assets not bundled)
         shell: pwsh
         run: python tools/build_portable.py --site "${{ matrix.project }}" --mode bootstrap
+      - name: Smoke-test the actual frozen EXE (offline, no vendor assets)
+        shell: pwsh
+        run: |
+          $project = "${{ matrix.project }}"
+          $exe = (Get-ChildItem "dist/portable/*.exe" | Select-Object -First 1).FullName
+          $output = Join-Path $env:RUNNER_TEMP ("portable-smoke-" + $project + ".json")
+          $process = Start-Process -FilePath $exe -ArgumentList "--self-test-output `"$output`"" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "EXE failed startup smoke-test: $project (exit $($process.ExitCode))" }
+          if (-not (Test-Path -LiteralPath $output)) { throw "EXE created no self-test output: $project" }
+          $result = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
+          if (-not $result.ok -or -not $result.frozen -or $result.project -ne $project -or $result.mode -ne "bootstrap") {
+            throw "EXE identity/resources mismatch: $project $($result | ConvertTo-Json -Compress)"
+          }
+          if ($result.missing.Count -ne 0) { throw "EXE missing bundled resources: $project" }
+          Write-Host "PASS: frozen EXE starts, selects $project and loads packaged resources."
       - name: Upload standalone Windows EXE
         uses: actions/upload-artifact@v4
         with:

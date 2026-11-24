@@ -55,6 +55,12 @@ py -3 tools/build_portable.py --site RoboticsLab --mode embedded --download-miss
 
 **Windows build only:** PyInstaller does not cross-compile Windows `.exe` from Linux. A GitHub Actions workflow (`.github/workflows/build-portable-exes.yml`) builds ten **Bootstrap** EXEs on Windows runners and uploads per-site workflow artifacts. The workflow does not package the vendor's website code.
 
+## Startup crash fix (2026-11-24)
+
+The first Windows one-file builds unexpectedly displayed **"No portable_selection.json in packaged application"** because their site selection data was missing from the runtime bundle. This revision **generates a unique Python entrypoint for every website** and compiles its project identity and build mode directly into the frozen EXE. It no longer depends on a JSON selector in the extracted archive.
+
+Windows CI now starts **each actual built EXE** with `--self-test-output <path>` before publishing an artifact. The offline check verifies the frozen entrypoint, exact site identity, fixed port, build mode and required Thai UI assets without triggering any web download or opening a browser. Build success alone is not considered validation. Discard the original EXEs and use newly built artifacts from a passing smoke-tested run.
+
 ## First-run cache and updating
 
 - Writable cache and persistent translation data: `%LOCALAPPDATA%\SimulationLearning\<Site>\`.

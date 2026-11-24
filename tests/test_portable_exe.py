@@ -149,9 +149,11 @@ class PortableExeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             temp = Path(folder)
             for project in app.SITES:
-                selection = temp / (project + ".json")
-                selection.write_text(json.dumps({"project": project, "mode": "bootstrap"}))
-                command, name = build.build_command(project, None, selection, temp)
+                entrypoint = build.generate_entrypoint(project, "bootstrap", temp)
+                self.assertIn("packaged_project=", entrypoint.read_text(encoding="utf-8"))
+                self.assertIn("packaged_mode=", entrypoint.read_text(encoding="utf-8"))
+                command, name = build.build_command(project, None, entrypoint, temp)
+                self.assertNotIn("portable_selection.json", " ".join(command))
                 self.assertIn("--onefile", command)
                 self.assertIn("--windowed", command)
                 self.assertIn("--add-data", command)
@@ -161,9 +163,55 @@ class PortableExeTests(unittest.TestCase):
                 self.assertTrue(name.endswith("-" + str(load_config(ROOT / project)["port"])))
                 dummy = temp / "site"
                 dummy.mkdir(exist_ok=True)
-                cmd2, name2 = build.build_command(project, dummy, selection, temp, mode="embedded")
+                embedded_entrypoint = build.generate_entrypoint(project, "embedded", temp)
+                cmd2, name2 = build.build_command(project, dummy, embedded_entrypoint, temp, mode="embedded")
                 self.assertIn(str(dummy), " ".join(cmd2))
                 self.assertTrue(name2.endswith("-Offline"))
+
+    def test_all_generated_entrypoints_compile_and_select_correct_site(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for project in app.SITES:
+                for mode in ("bootstrap", "embedded"):
+                    entry = build.generate_entrypoint(project, mode, Path(tmp))
+                    src = entry.read_text(encoding="utf-8")
+                    compile(src, str(entry), "exec")
+                    self.assertIn('packaged_project="' + project + '"', src)
+                    self.assertIn('packaged_mode="' + mode + '"', src)
+
+    def test_embedded_identity_works_without_selection_json(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with patch.object(app, "app_data", lambda p: root / "state" / p), \
+                 patch.object(app, "run", return_value=0) as fake_run:
+                result = app.main(["--no-gui", "--no-browser"], bundle_root=ROOT,
+                                  packaged_project="ESP32", packaged_mode="bootstrap")
+                self.assertEqual(result, 0)
+                self.assertEqual(fake_run.call_args.args[:2], (ROOT, "ESP32"))
+
+    def test_frozen_smoke_probe_does_not_need_cache_or_network(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for project in app.SITES:
+                out = Path(tmp) / (project + ".json")
+                with patch.object(app, "run", side_effect=AssertionError("Must not start server")):
+                    result = app.main(["--self-test-output", str(out)], bundle_root=ROOT,
+                                      packaged_project=project, packaged_mode="bootstrap")
+                self.assertEqual(result, 0, project)
+                data = json.loads(out.read_text(encoding="utf-8"))
+                self.assertEqual(data["project"], project)
+                self.assertEqual(data["port"], 8121 + app.SITES.index(project))
+                self.assertTrue(data["ok"])
+                self.assertEqual(data["missing"], [])
+
+    def test_frozen_smoke_fails_when_locale_files_are_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "ESP32").mkdir()
+            (root / "ESP32/config.json").write_bytes((ROOT / "ESP32/config.json").read_bytes())
+            output = root / "result.json"
+            status = app.main(["--self-test-output", str(output)], bundle_root=root,
+                              packaged_project="ESP32", packaged_mode="bootstrap")
+            self.assertEqual(status, 3)
+            self.assertFalse(json.loads(output.read_text(encoding="utf-8"))["ok"])
 
     def test_bootstrap_cache_check_does_not_require_download(self):
         self.assertEqual(build.cli(["--all", "--mode", "bootstrap", "--check"]), 0)

@@ -303,26 +303,58 @@ def run(bundle_root, project, gui=True, browser=True, state_dir=None,
     return 0
 
 
-def main(argv=None, bundle_root=None):
+def main(argv=None, bundle_root=None, *, packaged_project=None, packaged_mode=None):
     parser = argparse.ArgumentParser(description="SimulationLearning Portable EXE")
     parser.add_argument("--site", choices=SITES, help="Development-only site override")
     parser.add_argument("--no-gui", action="store_true", help="Run server without Tk window")
     parser.add_argument("--no-browser", action="store_true")
     parser.add_argument("--port", type=int, help="Port override for diagnostics")
+    parser.add_argument("--self-test-output", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     root = Path(bundle_root or getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
-    selection = root / "portable_selection.json"
-    if selection.is_file():
-        selected = json.loads(selection.read_text(encoding="utf-8"))
-        project = selected["project"]
-        mode = selected.get("mode", "bootstrap")
-        if args.site is not None and args.site != project:
-            raise ValueError("This EXE is bound to %s, not %s" % (project, args.site))
-    elif args.site:
-        project = args.site
-        mode = "bootstrap"
+    # PyInstaller builds a distinct Python entrypoint for every website. The
+    # identity is compiled into Python bytecode, not loaded from a fragile
+    # --add-data JSON file that could be omitted from a frozen archive.
+    if packaged_project is not None:
+        project = packaged_project
+        mode = packaged_mode or "bootstrap"
     else:
-        raise FileNotFoundError("No portable_selection.json in packaged application")
+        # Developer/source compatibility; old frozen packages with missing
+        # portable_selection.json must be rebuilt and are not silently guessed.
+        selection = root / "portable_selection.json"
+        if selection.is_file():
+            selected = json.loads(selection.read_text(encoding="utf-8"))
+            project = selected["project"]
+            mode = selected.get("mode", "bootstrap")
+        elif args.site and not getattr(sys, "frozen", False):
+            project = args.site
+            mode = "bootstrap"
+        else:
+            raise FileNotFoundError("Packaged site identity is missing. Rebuild this EXE with the current Portable builder.")
+    if project not in SITES or mode not in ("bootstrap", "embedded"):
+        raise ValueError("Invalid packaged site identity: %r / %r" % (project, mode))
+    if args.site is not None and args.site != project:
+        raise ValueError("This EXE is bound to %s, not %s" % (project, args.site))
+    if args.self_test_output is not None:
+        # An offline, preflight smoke check running INSIDE the real Windows EXE.
+        # No GUI, network, cache downloads or user-data directory required.
+        cfg = load_config(root / project)
+        required = [root / project / "config.json"]
+        if project == "MoonLife":
+            required.extend(root / "MoonLife" / "translation" / n
+                            for n in ("thai_overlay.js", "thai_overlay.css", "thai_dictionary.json"))
+        else:
+            required.extend(root / "localization" / n
+                            for n in ("thai_overlay.js", "thai_overlay.css", "common_th.json"))
+            required.append(root / "localization" / "sites" / (cfg["id"] + ".json"))
+        missing = [str(p.relative_to(root)) for p in required if not p.is_file()]
+        info = {"ok": not missing, "project": project, "port": cfg["port"],
+                "mode": mode, "frozen": bool(getattr(sys, "frozen", False)),
+                "missing": missing}
+        output = args.self_test_output.resolve()
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(info, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return 0 if info["ok"] else 3
     state = app_data(project)
     state.mkdir(parents=True, exist_ok=True)
     if getattr(sys, "frozen", False) and (sys.stdout is None or sys.stderr is None):
