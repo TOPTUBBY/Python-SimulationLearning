@@ -2,6 +2,21 @@
 
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-11-24
+
+### Added
+- Byte-Sized Algorithms (Algo Lab) as website #8 on port `8128` and route `/#/big-o/1`.
+- Standard launcher, updater, validator, configuration, bilingual guide and offline fixture tests.
+- Added the eighth website to `Launch_All.bat`, `Update_All.bat` and `Check_All.bat`.
+
+### Changed
+- Updated root README, release notes, toolkit version and shared runtime version to `1.2.0`.
+
+### Notes
+- User-approved integration into the stable repository.
+- No original website JS/CSS/content bundles are committed.
+- Visual fidelity, animations, and offline functionality need independent browser testing.
+
 ## [1.1.0] - 2026-11-23
 
 ### Added

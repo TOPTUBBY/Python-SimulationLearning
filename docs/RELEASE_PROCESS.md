@@ -3,7 +3,7 @@
 ## Branch convention
 
 - `main`: stable version people should download.
-- `develop/v1.2.0`: recommended next release work (create if needed).
+- `develop/v1.3.0`: recommended next release work (create if needed).
 - `feature/<name>` / `fix/<name>`: short-lived feature/fix branches; PR into the active development branch.
 
 ## Versioning
@@ -22,12 +22,12 @@ For every release: update the root `VERSION`, the `VERSION` constant in `tools/c
 python -m unittest discover -s tests -v
 git switch main
 git pull --ff-only
-git switch -c develop/v1.2.0
+git switch -c develop/v1.3.0
 # edit and test; create PR back to main
 git switch main
 git pull --ff-only
-git tag -a v1.2.0 -m "SimulationLearning v1.2.0"
-git push origin main v1.2.0
+git tag -a v1.3.0 -m "SimulationLearning v1.3.0"
+git push origin main v1.3.0
 ```
 
 ## Release verification checklist

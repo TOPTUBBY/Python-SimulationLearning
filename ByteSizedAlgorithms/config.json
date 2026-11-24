@@ -1,0 +1,8 @@
+{
+  "id": "byte-sized-algorithms",
+  "name": "Byte-Sized Algorithms",
+  "description": "Algo Lab — 86 visual algorithm lessons, 14 chapters, step-by-step interactive lessons, quizzes and cheatsheets",
+  "source": "https://byte-sized-algorithms.vercel.app/",
+  "launch_path": "/#/big-o/1",
+  "port": 8128
+}
