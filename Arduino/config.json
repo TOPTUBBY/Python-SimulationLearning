@@ -4,5 +4,8 @@
   "description": "Interactive Arduino board and circuit lessons",
   "source": "https://learn-arduino-red.vercel.app/",
   "launch_path": "/#board",
-  "port": 8122
+  "port": 8122,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

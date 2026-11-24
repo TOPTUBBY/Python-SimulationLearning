@@ -4,5 +4,8 @@
   "description": "Algo Lab — 86 visual algorithm lessons, 14 chapters, step-by-step interactive lessons, quizzes and cheatsheets",
   "source": "https://byte-sized-algorithms.vercel.app/",
   "launch_path": "/#/big-o/1",
-  "port": 8128
+  "port": 8128,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

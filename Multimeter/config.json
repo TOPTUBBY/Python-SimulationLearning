@@ -4,5 +4,8 @@
   "description": "Electronics 101 interactive multimeter lesson",
   "source": "https://electronics-101-six.vercel.app/",
   "launch_path": "/multimeter",
-  "port": 8124
+  "port": 8124,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

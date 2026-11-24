@@ -4,5 +4,8 @@
   "description": "System design foundations and architecture lessons",
   "source": "https://designed-to-scale.vercel.app/",
   "launch_path": "/#/",
-  "port": 8126
+  "port": 8126,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

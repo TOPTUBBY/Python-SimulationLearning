@@ -4,5 +4,8 @@
   "description": "Interactive 3D ESP32 lessons and circuits",
   "source": "https://learn-esp32.vercel.app/",
   "launch_path": "/#board",
-  "port": 8121
+  "port": 8121,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

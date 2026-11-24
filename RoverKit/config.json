@@ -4,5 +4,8 @@
   "description": "RoverKit driving and robotics learning",
   "source": "https://roverkit.vercel.app/",
   "launch_path": "/#drive",
-  "port": 8123
+  "port": 8123,
+  "thai_enabled": true,
+  "thai_default": false,
+  "online_translation_default": false
 }

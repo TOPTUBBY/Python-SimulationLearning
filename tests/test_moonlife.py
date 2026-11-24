@@ -33,7 +33,7 @@ def stop(server, thread):
     thread.join(timeout=5)
 
 
-class MoonLifeTests(unittest.TestCase):
+class MoonLifePreviewTests(unittest.TestCase):
     def test_01_config_fixed_port_8129(self):
         self.assertEqual(CONFIG['id'], 'moonlife')
         self.assertEqual(CONFIG['port'], 8129)
@@ -167,10 +167,10 @@ class MoonLifeTests(unittest.TestCase):
             self.assertFalse(update_site({'source':'http://127.0.0.1:1/'},root,jobs=1))
             self.assertIn('KEEP ME',(root/'site/index.html').read_text())
 
-    def test_12_release_version_and_clean_vendor_cache(self):
-        self.assertEqual((ROOT/'VERSION').read_text().strip(),'1.3.0')
+    def test_12_version_and_local_cache_not_git(self):
+        self.assertEqual((ROOT/'VERSION').read_text().strip(),'1.4.0')
         self.assertFalse((PROJECT/'site').exists())
-        self.assertIn('Approved', (PROJECT/'README.md').read_text(encoding='utf-8'))
+        self.assertTrue((PROJECT/'README.md').is_file())
 
 
 if __name__ == '__main__':

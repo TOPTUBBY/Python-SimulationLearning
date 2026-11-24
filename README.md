@@ -15,13 +15,21 @@ A Windows-friendly collection of nine local-launch learning/simulation frontends
 | Protocol | [Protocol Explorer](https://protocol-explorer-alpha.vercel.app/) | http://127.0.0.1:8125/ | `Protocol/` |
 | DesignedToScale | [Designed to Scale](https://designed-to-scale.vercel.app/#/) | http://127.0.0.1:8126/#/ | `DesignedToScale/` |
 | RoboticsLab | [Robotics Lab](https://robotics-lab-app.vercel.app/#uno) | http://127.0.0.1:8127/#uno | `RoboticsLab/` |
-| ByteSizedAlgorithms | [Byte-Sized Algorithms — Algo Lab](https://byte-sized-algorithms.vercel.app/#/big-o/1) | http://127.0.0.1:8128/#/big-o/1 | `ByteSizedAlgorithms/` |
-| MoonLife | [Project Moon Life](https://project-moon-life.vercel.app/) | http://127.0.0.1:8129/ | `MoonLife/` |
+| ByteSizedAlgorithms | [Byte-Sized Algorithms](https://byte-sized-algorithms.vercel.app/#/big-o/1) | http://127.0.0.1:8128/#/big-o/1 | `ByteSizedAlgorithms/` |
+| MoonLife | [Moon Life](https://project-moon-life.vercel.app/) | http://127.0.0.1:8129/ | `MoonLife/` |
+
+## Thai UI — v1.4.0
+
+**New:** Thai / Original language picker for the first eight websites (ports 8121–8128). Moon Life (8129) already has its own Thai overlay and is left unchanged. The picker is independent of upstream site code and does not modify downloaded assets.
+
+Choose `TH · ไทย` at the bottom-right. Local dictionaries cover common controls and site-specific topics. The optional **online translation switch is OFF by default** to avoid sending displayed text to an external service without your choice. When enabled, unseen text is translated via Google Translate and cached locally. Switching back to `Original` restores the displayed source language. No translation applies to code, editable inputs, numeric readouts or text rendered directly inside Canvas/WebGL.
+
+**Validation:** see [`THAI_TEST_CHECKLIST.md`](THAI_TEST_CHECKLIST.md). The local fixture tests pass; complete visual/function parity and translation of every sentence cannot be guaranteed without browser testing against original sites.
 
 ## Quick start (Windows)
 
 1. Install **Python 3.8+** from [python.org](https://www.python.org/downloads/windows/) and select **Add Python to PATH**. No pip packages or Node.js are required.
-2. `git clone https://github.com/TOPTUBBY/Python-SimulationLearning.git` or download the repository as ZIP and extract it.
+2. Clone the repository or download its ZIP from GitHub, then extract it while retaining the shared `tools/` and `localization/` folders.
 3. Double-click `ESP32/Launcher.bat` (or another project's `Launcher.bat`). On its **first launch**, it downloads that site's public JavaScript, CSS, models and other referenced assets to that project's local ignored `site/` directory. Internet access is required.
 4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
 5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
@@ -31,7 +39,7 @@ To start all nine servers at once, double-click `Launch_All.bat`. The nine serve
 ### ภาษาไทย — เริ่มใช้งาน
 
 1. ติดตั้ง **Python 3.8 ขึ้นไป** โดยเลือก `Add Python to PATH` (ไม่ต้องติดตั้งไลบรารีเสริม)
-2. ดาวน์โหลด ZIP จาก GitHub หรือ `git clone` แล้วแตกไฟล์โดย **คงโครงสร้างทุกโฟลเดอร์ไว้** เพราะ `tools/` เป็นส่วนกลาง
+2. ดาวน์โหลด ZIP รุ่นล่าสุดจาก GitHub หรือใช้ `git clone` แล้วแตกไฟล์โดย **คงโครงสร้างทุกโฟลเดอร์ไว้** เพราะ `tools/` และ `localization/` เป็นส่วนกลาง
 3. ดับเบิลคลิก `Launcher.bat` ในโฟลเดอร์เว็บที่ต้องการ เช่น `ESP32/Launcher.bat` ระบบจะดาวน์โหลดไฟล์ต้นฉบับเข้ามาใน `site/` เมื่อใช้งานครั้งแรก (ต้องมีอินเทอร์เน็ต)
 4. หลังดาวน์โหลดเสร็จ เว็บจะเปิดเองที่พอร์ตของโครงการนั้น เปิดหน้าต่าง CMD ทิ้งไว้ระหว่างใช้งาน และปิดหน้าต่างเพื่อหยุด Server
 5. กด `Update_Clone.bat` เมื่อต้องการอัปเดตไฟล์จากต้นฉบับ และ `Check_Clone.bat` เมื่อต้องการตรวจสอบไฟล์สำคัญ
@@ -42,64 +50,36 @@ To start all nine servers at once, double-click `Launch_All.bat`. The nine serve
 
 ```text
 Python-SimulationLearning/
-├── ESP32/
-├── Arduino/
-├── RoverKit/
-├── Multimeter/
-├── Protocol/
-├── DesignedToScale/
-├── RoboticsLab/
-│   ├── Launcher.bat
-│   ├── Update_Clone.bat
-│   ├── Check_Clone.bat
-│   ├── config.json
-│   ├── server.py
-│   ├── mirror.py
-│   ├── verify_clone.py
-│   └── site/                 # downloaded by user; gitignored
-├── ByteSizedAlgorithms/
-├── MoonLife/
-│   ├── Launcher.bat
-│   ├── Update_Clone.bat
-│   ├── Check_Clone.bat
-│   ├── config.json
-│   ├── server.py
-│   ├── mirror.py
-│   ├── verify_clone.py
-│   ├── README.md
-│   └── translation/
-│       ├── thai_dictionary.json
-│       ├── thai_overlay.js
-│       └── thai_overlay.css
-│   ├── Launcher.bat
-│   ├── Update_Clone.bat
-│   ├── Check_Clone.bat
-│   ├── config.json
-│   ├── server.py
-│   ├── mirror.py
-│   ├── verify_clone.py
-│   └── site/                 # downloaded locally; gitignored
+├── ESP32/                 # port 8121
+├── Arduino/               # port 8122
+├── RoverKit/              # port 8123
+├── Multimeter/            # port 8124
+├── Protocol/              # port 8125
+├── DesignedToScale/       # port 8126
+├── RoboticsLab/           # port 8127
+├── ByteSizedAlgorithms/   # port 8128
+├── MoonLife/              # port 8129 (independent Thai support)
+├── localization/
+│   ├── thai_overlay.js
+│   ├── thai_overlay.css
+│   ├── common_th.json
+│   └── sites/              # one dictionary per website
 ├── tools/
-│   ├── clone_runtime.py
-│   └── moon_runtime.py     # common mirroring/check/server implementation
+│   ├── clone_runtime.py   # original shared mirror/server
+│   ├── moon_runtime.py    # existing Moon Life Thai feature
+│   └── thai_runtime.py    # Thai UI server wrapper
 ├── tests/
-│   ├── test_runtime.py
-│   ├── test_robotics.py
-│   ├── test_byte_sized_algorithms.py
-│   └── test_moonlife.py
+│   └── test_thai_ui.py    # Thai UI regression suite (plus existing tests)
 ├── docs/
-│   ├── RELEASE_PROCESS.md
-│   └── TROUBLESHOOTING.md
+├── THAI_TEST_CHECKLIST.md
+├── VERSION                 # 1.4.0
 ├── Launch_All.bat
 ├── Update_All.bat
 ├── Check_All.bat
-├── CHANGELOG.md
-├── VERSION
-├── .gitignore
-└── LICENSE
+└── README.md
 ```
 
-Every project directory contains the **same filenames** and the same small Python entrypoints. Different ports, routes and sources are read from its `config.json`; fixes to shared functionality are made once in `tools/clone_runtime.py`.
+Each of the first eight website folders still contains `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, `server.py`, `mirror.py`, `verify_clone.py`, and `config.json` plus per-site README. Its `site/` cache is created locally on first run and is **not included** in this archive.
 
 ## Commands
 
@@ -112,8 +92,6 @@ python RoverKit/verify_clone.py
 python Multimeter/server.py --port 8124
 python DesignedToScale/server.py --update
 python RoboticsLab/server.py --no-browser
-python ByteSizedAlgorithms/server.py --no-browser
-python MoonLife/server.py --no-browser
 python -m unittest discover -s tests -v
 ```
 
@@ -127,28 +105,14 @@ python -m unittest discover -s tests -v
 
 ## Version control & releases
 
-- Toolkit version: **`1.3.0`**, tracked in root `VERSION` and `CHANGELOG.md`.
+- Current stable toolkit version: **`1.4.0`** (`VERSION`). It includes optional Thai UI for all nine sites.
 - Recommended workflow: `main` = stable, `develop/vX.Y.Z` = development, `feature/*` = changes, `fix/*` = bug fixes; merge to main after tests. Release tags: `vX.Y.Z`.
 - `site/` is ignored intentionally: downloaded third-party content must not be pushed to a public repository without appropriate rights.
 - See [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md) for release commands and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for Windows help.
 
-## Robotics Lab validation
+## Robotics Lab quality checks
 
-Robotics Lab includes eight interactive 3D boards, a Workbench, lessons, quizzes and assembly. Its new port, local mirroring, cache validation, HTTP health endpoint, and restart behavior are covered by local fixture tests. **The upstream WebGL visuals and all browser-only interactions require separate comparison on your Windows PC; 100% parity is not independently verified.** See [`RoboticsLab/README.md`](RoboticsLab/README.md) for the full checklist.
-
-## Byte-Sized Algorithms validation
-
-Byte-Sized Algorithms (Algo Lab) is an interactive course with 86 lessons in 14 chapters covering algorithm fundamentals, data structures, and complexity. It runs at `127.0.0.1:8128` after the first cache download. See [`ByteSizedAlgorithms/README.md`](ByteSizedAlgorithms/README.md) for the checklist covering animations, practice, cheatsheets, challenges, search, progress and restart behavior. **Automated fixture tests verify the local mirror/server infrastructure, not exact visual parity or offline behavior of every lesson.**
-
-## Moon Life: Thai language support / ภาษาไทย
-
-The ninth project, **[MoonLife](MoonLife/README.md)** on port **8129**, uses the same mirror/server launcher architecture and adds a **separate display-only Thai localization overlay**. It keeps the original game's bundled code unmodified. You can switch between **TH · ไทย** and **EN · Original** from the lower-right language panel.
-
-- 249 built-in Thai translations cover menus, character creation, controls, status values and common UI terms.
-- For unseen story/event strings, **optional online translation** sends text displayed in the game to Google Translate through the local server; translations are cached locally. Disable online translation in the panel to use the local dictionary/cache only.
-- Translations and original game content may not match in all situations; new events can remain untranslated when offline. Save data at localhost is **separate** from saves on the original website due to browser origin isolation.
-- The original game contains serious themes including death, illness and crime, and recommends ages 15+.
-- The user approved integrating the preview; local fixture tests passed **12/12**, but actual full-game parity and comprehensive Thai translation still require real-world testing. See [MoonLife test notes](MoonLife/TEST_RESULTS.md).
+Robotics Lab features 3D/WebGL boards, Workbench, lessons, quizzes and assembly. Its local launcher, mirroring, startup, health endpoint and restart were tested with offline fixtures. **Visual/functional equivalence of the original WebGL experience has not been independently verified**. Compare the local site with upstream and follow the checklist in [`RoboticsLab/README.md`](RoboticsLab/README.md).
 
 ## Source, attribution & license
 

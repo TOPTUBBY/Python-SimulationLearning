@@ -1,6 +1,22 @@
 # Changelog
-
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
+
+## [1.4.0] - 2026-11-24
+
+### Added
+- Thai / Original language switcher for eight learning sites: ESP32 (8121), Arduino (8122), RoverKit (8123), Multimeter (8124), Protocol Explorer (8125), Designed to Scale (8126), Robotics Lab (8127), and Byte-Sized Algorithms (8128).
+- Shared localization runtime, 265 common Thai UI translations plus site-specific dictionaries, dynamic DOM label updates, and reversible language selection.
+- Per-site persistent language preferences, optional online translation of previously unknown text, and locally cached translations.
+- `Check_Thai_UI.bat`, site documentation, and localization regression tests.
+
+### Changed
+- Updated README, release documentation, and toolkit/runtime versions to `1.4.0`.
+- Preserved Moon Life (8129) Thai support, all original ports, and shared local-mirroring behavior.
+
+### Notes
+- Online translation is disabled by default; activating it may send visible text to Google Translate.
+- Original third-party website bundles remain excluded from the repository.
+- Local regression suite passed 40/40 tests; full-browser visual parity and every translation require user validation.
 
 ## [1.3.0] - 2026-11-24
 

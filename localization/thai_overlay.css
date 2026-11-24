@@ -1,0 +1,34 @@
+/* Independent Thai language picker. Does not replace the native site's UI. */
+#simthai-language-ui {
+  all: initial !important;
+  position: fixed !important; right: 14px !important; bottom: 14px !important;
+  z-index: 2147483600 !important; box-sizing:border-box !important;
+  display:flex !important; flex-direction:column !important; gap:7px !important;
+  background:rgba(22,27,39,.96) !important; color:#f2f7ff !important;
+  width:min(270px,calc(100vw - 28px)) !important; padding:10px !important;
+  border:1px solid rgba(180,190,211,.45) !important; border-radius:12px !important;
+  box-shadow:0 8px 32px rgba(0,0,0,.28) !important;
+  font:12px/1.4 system-ui,"Noto Sans Thai",Tahoma,sans-serif !important;
+  text-align:left !important; -webkit-text-size-adjust:100%;
+}
+#simthai-language-ui, #simthai-language-ui * {box-sizing:border-box !important;}
+#simthai-language-ui [hidden] {display:none !important;}
+#simthai-language-ui .simthai-head {display:flex;gap:5px;align-items:center;justify-content:space-between;}
+#simthai-language-ui .simthai-head strong {color:inherit;font:700 12px/1.3 inherit;}
+#simthai-language-ui .simthai-head button[data-fold] { flex:0 0 25px; height:24px; min-height:24px; }
+#simthai-language-ui .simthai-choices {display:flex;gap:6px;}
+#simthai-language-ui button {
+  flex:1; min-height:31px; background:#2e3546; border:1px solid #63718c;
+  color:#f0f2fa; border-radius:7px; cursor:pointer;
+  font:600 12px/1.3 system-ui,"Noto Sans Thai",Tahoma,sans-serif;
+}
+#simthai-language-ui button:hover {background:#42516e;}
+#simthai-language-ui button[aria-pressed="true"] {background:#c3dfff;color:#0b2445;border-color:#c3dfff;}
+#simthai-language-ui label {display:flex;gap:7px;align-items:center;color:#ebf1fc;font-size:11px;cursor:pointer;}
+#simthai-language-ui input {accent-color:#a0d0ff;width:14px;height:14px;cursor:pointer;}
+#simthai-language-ui small {font:10px/1.4 system-ui,"Noto Sans Thai",Tahoma,sans-serif;color:#c4cddd;}
+#simthai-language-ui .simthai-status {color:#b3e3fc; font-size:10px; word-break:break-word;}
+#simthai-language-ui.simthai-compact .simthai-options,
+#simthai-language-ui.simthai-compact .simthai-notes,
+#simthai-language-ui.simthai-compact .simthai-status {display:none !important;}
+@media (max-width:600px) {#simthai-language-ui{right:8px !important;bottom:8px !important;width:min(245px,calc(100vw - 16px)) !important;}}
