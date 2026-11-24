@@ -1,0 +1,13 @@
+{
+  "id": "esp32-labs",
+  "name": "ESP32-S3 Bench Guide (ESP32 Labs)",
+  "description": "ESP32-S3 N16R8 interactive bench guide, 32 labs, pinout, 3D board, simulator and code reader",
+  "source": "https://ionloft.com/",
+  "original_url": "https://ionloft.com/esp-labs/#/?lang=en",
+  "source_subpath": "/esp-labs/",
+  "launch_path": "/esp-labs/#/?lang=en",
+  "port": 8130,
+  "thai_enabled": true,
+  "thai_default": true,
+  "online_translation_default": false
+}

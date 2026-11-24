@@ -1,6 +1,6 @@
 # SimulationLearning
 
-A Windows-friendly collection of nine local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
+A Windows-friendly collection of ten local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
 
 > **Status:** Local infrastructure and regression tests have been implemented. Actual online download, visual fidelity, interactive 3D simulations, multi-language lessons, and offline coverage must still be checked on a networked Windows PC. "100% identical" is not guaranteed.
 
@@ -17,10 +17,11 @@ A Windows-friendly collection of nine local-launch learning/simulation frontends
 | RoboticsLab | [Robotics Lab](https://robotics-lab-app.vercel.app/#uno) | http://127.0.0.1:8127/#uno | `RoboticsLab/` |
 | ByteSizedAlgorithms | [Byte-Sized Algorithms](https://byte-sized-algorithms.vercel.app/#/big-o/1) | http://127.0.0.1:8128/#/big-o/1 | `ByteSizedAlgorithms/` |
 | MoonLife | [Moon Life](https://project-moon-life.vercel.app/) | http://127.0.0.1:8129/ | `MoonLife/` |
+| ESP32Labs | [ESP32-S3 Bench Guide](https://ionloft.com/esp-labs/#/?lang=en) | http://127.0.0.1:8130/esp-labs/#/?lang=en | `ESP32Labs/` |
 
-## Thai UI — v1.4.0
+## Thai UI — v1.5.0
 
-**New:** Thai / Original language picker for the first eight websites (ports 8121–8128). Moon Life (8129) already has its own Thai overlay and is left unchanged. The picker is independent of upstream site code and does not modify downloaded assets.
+**New:** Thai / Original language picker for the first eight websites (ports 8121–8128). Moon Life (8129) already has its own Thai overlay. ESP32 Labs (8130) now offers a Thai / Original picker with Thai shown by default; the first nine sites retain their earlier behavior. The picker is independent of upstream site code and does not modify downloaded assets.
 
 Choose `TH · ไทย` at the bottom-right. Local dictionaries cover common controls and site-specific topics. The optional **online translation switch is OFF by default** to avoid sending displayed text to an external service without your choice. When enabled, unseen text is translated via Google Translate and cached locally. Switching back to `Original` restores the displayed source language. No translation applies to code, editable inputs, numeric readouts or text rendered directly inside Canvas/WebGL.
 
@@ -34,7 +35,7 @@ Choose `TH · ไทย` at the bottom-right. Local dictionaries cover common co
 4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
 5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
 
-To start all nine servers at once, double-click `Launch_All.bat`. The nine servers use different ports. Expect nine CMD windows/browser tabs; downloading every site may take time the first time.
+To start all ten servers at once, double-click `Launch_All.bat`. The ten servers use different ports. Expect ten CMD windows/browser tabs; downloading every site may take time the first time.
 
 ### ภาษาไทย — เริ่มใช้งาน
 
@@ -59,6 +60,7 @@ Python-SimulationLearning/
 ├── RoboticsLab/           # port 8127
 ├── ByteSizedAlgorithms/   # port 8128
 ├── MoonLife/              # port 8129 (independent Thai support)
+├── ESP32Labs/             # port 8130 (subpath mirror, Thai UI)
 ├── localization/
 │   ├── thai_overlay.js
 │   ├── thai_overlay.css
@@ -66,20 +68,21 @@ Python-SimulationLearning/
 │   └── sites/              # one dictionary per website
 ├── tools/
 │   ├── clone_runtime.py   # original shared mirror/server
+│   ├── esp_labs_runtime.py # ESP32 Labs cache-slot/subpath adapter
 │   ├── moon_runtime.py    # existing Moon Life Thai feature
 │   └── thai_runtime.py    # Thai UI server wrapper
 ├── tests/
 │   └── test_thai_ui.py    # Thai UI regression suite (plus existing tests)
 ├── docs/
 ├── THAI_TEST_CHECKLIST.md
-├── VERSION                 # 1.4.0
+├── VERSION                 # 1.5.0
 ├── Launch_All.bat
 ├── Update_All.bat
 ├── Check_All.bat
 └── README.md
 ```
 
-Each of the first eight website folders still contains `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, `server.py`, `mirror.py`, `verify_clone.py`, and `config.json` plus per-site README. Its `site/` cache is created locally on first run and is **not included** in this archive.
+Each website folder contains `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, `server.py`, `mirror.py`, `verify_clone.py`, and `config.json` plus per-site README. Its `site/` cache is created locally on first run and is **not included** in this archive.
 
 ## Commands
 
@@ -92,12 +95,17 @@ python RoverKit/verify_clone.py
 python Multimeter/server.py --port 8124
 python DesignedToScale/server.py --update
 python RoboticsLab/server.py --no-browser
+python ESP32Labs/server.py --no-browser
 python -m unittest discover -s tests -v
 ```
 
+### ESP32 Labs (port 8130): Windows-safe cache management
+
+The new ESP32 Labs adapter preserves the upstream `/esp-labs/` subpath and adds a display-only Thai language overlay. Following the approved rc.3 hotfix, a verified `site.__staging__/` cache is served directly without copying or renaming hundreds of files. Explicit updates download into an inactive slot (`site.__next__/` or `site.__staging__/`) and select it using the small `site.__active__.json` marker. If an update fails, the last verified cache remains available. See [ESP32 Labs instructions](ESP32Labs/README.md) and [test checklist](ESP32Labs/TEST_CHECKLIST.md).
+
 ### How updates work
 
-- Updates download to `site.__staging__/`, validate the HTML plus root CSS/JS and only then replace `site/`. A failed update keeps the previous cache.
+- Standard sites stage downloads before replacing the active cache. ESP32 Labs uses its verified-cache-slot approach described above. Failed updates retain the last verified cache.
 - Unresolved/lazy dynamic assets may be fetched from the original public site on demand while online.
 - `Check_Clone.bat` checks key local files, **not** image-perfect accuracy or all runtime features.
 - If the original website changes its bundler, requires authentication, blocks mirroring or serves assets from a third-party host, some content may not work offline.
@@ -105,7 +113,7 @@ python -m unittest discover -s tests -v
 
 ## Version control & releases
 
-- Current stable toolkit version: **`1.4.0`** (`VERSION`). It includes optional Thai UI for all nine sites.
+- Current stable toolkit version: **`1.5.0`** (`VERSION`). Thai language overlays are available across all ten websites (Moon Life retains its independent implementation).
 - Recommended workflow: `main` = stable, `develop/vX.Y.Z` = development, `feature/*` = changes, `fix/*` = bug fixes; merge to main after tests. Release tags: `vX.Y.Z`.
 - `site/` is ignored intentionally: downloaded third-party content must not be pushed to a public repository without appropriate rights.
 - See [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md) for release commands and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for Windows help.
@@ -116,4 +124,4 @@ Robotics Lab features 3D/WebGL boards, Workbench, lessons, quizzes and assembly.
 
 ## Source, attribution & license
 
-These nine websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.
+These ten websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.

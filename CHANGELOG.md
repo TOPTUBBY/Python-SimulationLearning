@@ -1,6 +1,23 @@
 # Changelog
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-11-24
+
+### Added
+- ESP32 Labs (ESP32-S3 Bench Guide) as website #10 on port 8130 at `/esp-labs/#/?lang=en`.
+- Source-subpath-aware mirror, local launcher, update/check commands, Thai dictionary, and 26 fixture tests.
+- Integrated ESP32Labs into Launch/Update/Check All and updated release documentation.
+
+### Fixed
+- Approved Windows hotfix rc.3: first launch serves a validated staging cache directly without copying/renaming the 583 downloaded files.
+- New cache slot selection with `site.__active__.json` and update rollback preserving the previous verified cache.
+- Git exclusions for the new cache slots and marker files.
+
+### Verification
+- User approved rc.3 for stable integration; 26/26 ESP32 Labs local fixture tests passed.
+- Actual browser parity, 3D assets, all 32 labs, offline behavior and complete Thai translations require verification on the target PC.
+- Original website JavaScript/CSS and media bundles are not committed.
+
 ## [1.4.0] - 2026-11-24
 
 ### Added

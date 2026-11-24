@@ -14,7 +14,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from clone_runtime import asset_path, check_site, load_config, make_handler, Mirror
 
 ROOT = Path(__file__).resolve().parents[1]
-PROJECTS = ["ESP32", "Arduino", "RoverKit", "Multimeter", "Protocol", "DesignedToScale", "RoboticsLab", "ByteSizedAlgorithms", "MoonLife"]
+PROJECTS = ["ESP32", "Arduino", "RoverKit", "Multimeter", "Protocol", "DesignedToScale", "RoboticsLab", "ByteSizedAlgorithms", "MoonLife", "ESP32Labs"]
 
 
 class RuntimeTests(unittest.TestCase):

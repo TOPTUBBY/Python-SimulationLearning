@@ -10,5 +10,6 @@ call "%~dp0DesignedToScale\Check_Clone.bat"
 call "%~dp0RoboticsLab\Check_Clone.bat"
 call "%~dp0ByteSizedAlgorithms\Check_Clone.bat"
 call "%~dp0MoonLife\Check_Clone.bat"
+call "%~dp0ESP32Labs\Check_Clone.bat"
 echo Finished.
 endlocal

@@ -2,6 +2,9 @@
 **/site/
 **/site.__staging__/
 **/site.__backup__/
+**/site.__next__/
+**/site.__active__.json
+**/site.__active__.json.tmp
 
 # Translation cache may contain displayed game data; keep it on the user machine only.
 **/translation_cache.json
