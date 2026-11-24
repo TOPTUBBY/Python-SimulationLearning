@@ -117,7 +117,8 @@ class ByteSizedAlgorithmsTests(unittest.TestCase):
             self.assertFalse((base/"site.__staging__").exists())
 
     def test_08_release_metadata(self):
-        self.assertEqual((ROOT / "VERSION").read_text().strip(), "1.2.0")
+        from clone_runtime import VERSION as TOOL_VERSION
+        self.assertEqual((ROOT / "VERSION").read_text().strip(), TOOL_VERSION)
         self.assertIn("Approved", (ROOT / "ByteSizedAlgorithms/README.md").read_text(encoding="utf-8"))
         self.assertFalse((ROOT / "ByteSizedAlgorithms/site").exists())
 
