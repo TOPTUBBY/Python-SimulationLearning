@@ -1,6 +1,6 @@
 # SimulationLearning
 
-A Windows-friendly collection of eight local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
+A Windows-friendly collection of nine local-launch learning/simulation frontends. Each website is mirrored *from its original public site to your own PC on first launch*, then served from `127.0.0.1` at a fixed port. This repository contains **our own launcher, Python web server, mirror utility, validator, config, tests and documentation**. It does **not** contain the third-party frontends themselves.
 
 > **Status:** Local infrastructure and regression tests have been implemented. Actual online download, visual fidelity, interactive 3D simulations, multi-language lessons, and offline coverage must still be checked on a networked Windows PC. "100% identical" is not guaranteed.
 
@@ -16,6 +16,7 @@ A Windows-friendly collection of eight local-launch learning/simulation frontend
 | DesignedToScale | [Designed to Scale](https://designed-to-scale.vercel.app/#/) | http://127.0.0.1:8126/#/ | `DesignedToScale/` |
 | RoboticsLab | [Robotics Lab](https://robotics-lab-app.vercel.app/#uno) | http://127.0.0.1:8127/#uno | `RoboticsLab/` |
 | ByteSizedAlgorithms | [Byte-Sized Algorithms — Algo Lab](https://byte-sized-algorithms.vercel.app/#/big-o/1) | http://127.0.0.1:8128/#/big-o/1 | `ByteSizedAlgorithms/` |
+| MoonLife | [Project Moon Life](https://project-moon-life.vercel.app/) | http://127.0.0.1:8129/ | `MoonLife/` |
 
 ## Quick start (Windows)
 
@@ -25,7 +26,7 @@ A Windows-friendly collection of eight local-launch learning/simulation frontend
 4. After the download passes the entrypoint check, the browser opens automatically at the assigned port. **Leave the CMD window running** while using the site. Close it or press Ctrl+C to stop the server.
 5. On later launches the cached site is served without re-downloading. Use `Update_Clone.bat` when you want to refresh to the latest original version; use `Check_Clone.bat` to check local entrypoint integrity.
 
-To start all eight servers at once, double-click `Launch_All.bat`. The eight servers use different ports. Expect eight CMD windows/browser tabs; downloading every site may take time the first time.
+To start all nine servers at once, double-click `Launch_All.bat`. The nine servers use different ports. Expect nine CMD windows/browser tabs; downloading every site may take time the first time.
 
 ### ภาษาไทย — เริ่มใช้งาน
 
@@ -57,6 +58,19 @@ Python-SimulationLearning/
 │   ├── verify_clone.py
 │   └── site/                 # downloaded by user; gitignored
 ├── ByteSizedAlgorithms/
+├── MoonLife/
+│   ├── Launcher.bat
+│   ├── Update_Clone.bat
+│   ├── Check_Clone.bat
+│   ├── config.json
+│   ├── server.py
+│   ├── mirror.py
+│   ├── verify_clone.py
+│   ├── README.md
+│   └── translation/
+│       ├── thai_dictionary.json
+│       ├── thai_overlay.js
+│       └── thai_overlay.css
 │   ├── Launcher.bat
 │   ├── Update_Clone.bat
 │   ├── Check_Clone.bat
@@ -66,11 +80,13 @@ Python-SimulationLearning/
 │   ├── verify_clone.py
 │   └── site/                 # downloaded locally; gitignored
 ├── tools/
-│   └── clone_runtime.py     # common mirroring/check/server implementation
+│   ├── clone_runtime.py
+│   └── moon_runtime.py     # common mirroring/check/server implementation
 ├── tests/
 │   ├── test_runtime.py
 │   ├── test_robotics.py
-│   └── test_byte_sized_algorithms.py
+│   ├── test_byte_sized_algorithms.py
+│   └── test_moonlife.py
 ├── docs/
 │   ├── RELEASE_PROCESS.md
 │   └── TROUBLESHOOTING.md
@@ -97,6 +113,7 @@ python Multimeter/server.py --port 8124
 python DesignedToScale/server.py --update
 python RoboticsLab/server.py --no-browser
 python ByteSizedAlgorithms/server.py --no-browser
+python MoonLife/server.py --no-browser
 python -m unittest discover -s tests -v
 ```
 
@@ -110,7 +127,7 @@ python -m unittest discover -s tests -v
 
 ## Version control & releases
 
-- Toolkit version: **`1.2.0`**, tracked in root `VERSION` and `CHANGELOG.md`.
+- Toolkit version: **`1.3.0`**, tracked in root `VERSION` and `CHANGELOG.md`.
 - Recommended workflow: `main` = stable, `develop/vX.Y.Z` = development, `feature/*` = changes, `fix/*` = bug fixes; merge to main after tests. Release tags: `vX.Y.Z`.
 - `site/` is ignored intentionally: downloaded third-party content must not be pushed to a public repository without appropriate rights.
 - See [`docs/RELEASE_PROCESS.md`](docs/RELEASE_PROCESS.md) for release commands and [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for Windows help.
@@ -123,6 +140,16 @@ Robotics Lab includes eight interactive 3D boards, a Workbench, lessons, quizzes
 
 Byte-Sized Algorithms (Algo Lab) is an interactive course with 86 lessons in 14 chapters covering algorithm fundamentals, data structures, and complexity. It runs at `127.0.0.1:8128` after the first cache download. See [`ByteSizedAlgorithms/README.md`](ByteSizedAlgorithms/README.md) for the checklist covering animations, practice, cheatsheets, challenges, search, progress and restart behavior. **Automated fixture tests verify the local mirror/server infrastructure, not exact visual parity or offline behavior of every lesson.**
 
+## Moon Life: Thai language support / ภาษาไทย
+
+The ninth project, **[MoonLife](MoonLife/README.md)** on port **8129**, uses the same mirror/server launcher architecture and adds a **separate display-only Thai localization overlay**. It keeps the original game's bundled code unmodified. You can switch between **TH · ไทย** and **EN · Original** from the lower-right language panel.
+
+- 249 built-in Thai translations cover menus, character creation, controls, status values and common UI terms.
+- For unseen story/event strings, **optional online translation** sends text displayed in the game to Google Translate through the local server; translations are cached locally. Disable online translation in the panel to use the local dictionary/cache only.
+- Translations and original game content may not match in all situations; new events can remain untranslated when offline. Save data at localhost is **separate** from saves on the original website due to browser origin isolation.
+- The original game contains serious themes including death, illness and crime, and recommends ages 15+.
+- The user approved integrating the preview; local fixture tests passed **12/12**, but actual full-game parity and comprehensive Thai translation still require real-world testing. See [MoonLife test notes](MoonLife/TEST_RESULTS.md).
+
 ## Source, attribution & license
 
-These eight websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.
+These nine websites are the work of their respective original owners; see the source links above and their original websites for credits and usage terms. This project is an *independent local-run toolkit*, not an official mirror or ownership claim. The repository's **MIT LICENSE applies only to code written for this toolkit**, not to the original sites' bundled code, visual design, lessons, images, models, or trademarks. Respect the source websites' terms, intellectual property rights and server capacity. Do not mass-redistribute their assets.

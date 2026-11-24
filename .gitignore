@@ -3,6 +3,9 @@
 **/site.__staging__/
 **/site.__backup__/
 
+# Translation cache may contain displayed game data; keep it on the user machine only.
+**/translation_cache.json
+
 # Python/OS/logs
 __pycache__/
 *.py[cod]

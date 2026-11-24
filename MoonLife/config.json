@@ -1,0 +1,10 @@
+{
+  "id": "moonlife",
+  "name": "Project Moon Life — Born as an Individual in the City",
+  "description": "Unofficial City life simulator with Thai localization overlay",
+  "source": "https://project-moon-life.vercel.app/",
+  "launch_path": "/",
+  "port": 8129,
+  "thai_default": true,
+  "online_translation_default": true
+}

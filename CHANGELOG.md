@@ -2,6 +2,23 @@
 
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-24
+
+### Added
+- **Project Moon Life / Born as an Individual in the City** as website #9 on port `8129` with local Launcher, Update, Check and Cache management.
+- Display-only Thai language overlay with **249** built-in translations, TH / Original switching, and optional dynamic story translation through a local endpoint with persistent local cache.
+- `tools/moon_runtime.py` for localized HTML injection and local translation service; `tests/test_moonlife.py` and project test results.
+- Moon Life integration in `Launch_All.bat`, `Update_All.bat` and `Check_All.bat`.
+
+### Changed
+- Updated README, version metadata, shared runtime version and release notes to `1.3.0`.
+- Added translation cache to `.gitignore`; original game assets and story scripts remain excluded from the repository.
+
+### Verification
+- User approved the preview for stable integration.
+- 12/12 local fixture tests passed for launcher, mirroring, HTML overlay, translation API, cache, server restart and rollback.
+- Visual parity, complete Thai translations and real online game/translation behavior require browser verification on the target machine.
+
 ## [1.2.0] - 2026-11-24
 
 ### Added

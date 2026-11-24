@@ -9,5 +9,6 @@ call "%~dp0Protocol\Update_Clone.bat"
 call "%~dp0DesignedToScale\Update_Clone.bat"
 call "%~dp0RoboticsLab\Update_Clone.bat"
 call "%~dp0ByteSizedAlgorithms\Update_Clone.bat"
+call "%~dp0MoonLife\Update_Clone.bat"
 echo Finished.
 endlocal
