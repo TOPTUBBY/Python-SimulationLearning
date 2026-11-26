@@ -1,9 +1,7 @@
-# Portable EXE / ดาวน์โหลดโปรแกรม
+# Portable EXE — 11 programs
 
-This directory is the designated home for all ten Windows EXEs. The Git repository intentionally excludes compiled binaries (~120 MB total), to keep clones/updates small; the real files are attached to [GitHub Release v1.6.0](https://github.com/TOPTUBBY/Python-SimulationLearning/releases/tag/v1.6.0) and included in the combined user download ZIP.
+This directory is the destination for the Windows x64 bootstrap executables. They are **distributed in GitHub Releases** rather than committed to Git history. Run `Download_All_EXEs.bat` to download and extract `SimulationLearning_Portable_11_EXEs.zip` from the [v1.7.0 Release](https://github.com/TOPTUBBY/Python-SimulationLearning/releases/tag/v1.7.0).
 
-**วิธีใช้:** ดับเบิลคลิก `Download_All_EXEs.bat` เพื่อดาวน์โหลดและแตกไฟล์ EXE ทั้ง 10 ตัวมาไว้ที่นี่ จากนั้นดับเบิลคลิกโปรแกรมที่ต้องการได้ทันที ไม่ต้องลง Python ในเครื่องผู้ใช้งาน
+**วิธีใช้:** ดับเบิลคลิก `Download_All_EXEs.bat` เพื่อดาวน์โหลด EXE ทั้ง 11 ตัว แล้วดับเบิลคลิกโปรแกรมที่ต้องการ ไม่มีข้อกำหนดให้ติดตั้ง Python หรือ Go บนเครื่องผู้ใช้ ตัวโปรแกรมดาวน์โหลดไฟล์เว็บไซต์ต้นฉบับเมื่อเปิดใช้งานครั้งแรก (ต้องมีอินเทอร์เน็ต)
 
-Or run `Portable/Build_Portable_All.bat` to compile the same ten EXEs from source on Windows.
-
-These are bootstrap EXEs: initial internet is required to download original website assets to LocalAppData.
+The first 10 apps are bundled through PyInstaller; **SimulationLearning-HowItsWired-8131.exe** uses native Go. Both architectures use only the local loopback HTTP server and a persistent user cache. A successful CI smoke test is not a guarantee of full website parity.

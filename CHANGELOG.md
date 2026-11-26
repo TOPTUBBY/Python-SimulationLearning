@@ -1,125 +1,85 @@
 # Changelog
 
+## [1.7.0] - 2026-11-26
+
+### Added
+- **How It’s Wired** as website #11 (`Launcher-Server/HowItsWired/`), opening `/lead-load` on port `8131`.
+- Matching `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, Python runtime wrapper, curated Thai dictionary and offline fixture tests.
+- Single-file native Windows x64 **Portable/HowItsWired** Go EXE with its own local HTTP server, Thai/Original picker, and user-local cache.
+- Updated Launch/Update/Check All and Windows GitHub Actions build matrix for **11** EXEs; actual compiled-binary smoke tests and ZIP checksum verification.
+
+### Changed
+- Extended the two-section `Launcher-Server/` and `Portable/` layout without changing the previous ten site configurations/ports.
+- Updated README, VERSION, executable downloader and release packaging for `SimulationLearning_Portable_11_EXEs.zip`.
+- Added `.active-cache.json` patterns to Git exclusions (HowIt’sWired uses a Windows-safe slot selector).
+
+### Verification & limitations
+- User approved the HowItsWired preview for integration.
+- Local Python Launcher-Server tests passed 73/73; legacy Portable suite passed 11/11; Go tests passed 4/4 on offline fixtures before integration.
+- User should still compare the live 3D simulator and all language strings against the original. The bootstrap executable does not distribute third-party site assets; internet is required for first launch.
+
 ## [1.6.0] - 2026-11-24
 
 ### Added
-- Consolidated the approved Portable EXE feature into the stable main codebase.
-- Organized two user-facing folders: `Launcher-Server/` and `Portable/` with `Portable/EXE/`.
-- Release downloader and EXE integrity/ZIP packaging utility.
-- GitHub Actions builds and smoke-tests ten bootstrap Windows EXEs, then publishes them as Release assets.
+- Stable integration of the approved Portable EXE build for all 10 websites (ports 8121–8130).
+- Two clearly separated user-facing sections: `Launcher-Server/` and `Portable/`.
+- `Portable/EXE/` destination with one-click GitHub Release download helper.
+- GitHub Actions Windows matrix build, runtime smoke-tests, and automatic release asset publication.
+- `Portable/package_exes.py` for EXE completeness, `MZ` signature and checksum validation.
 
 ### Changed
-- Preserved all ten websites, ports 8121–8130, Thai UI, and WinError 5-safe ESP32 Labs cache handling.
-- Updated source paths, documentation and test suite for the new folder structure.
-- Corrected portable builder paths while keeping site identity embedded in generated EXE entrypoints.
+- Existing Python launchers, shared runtime, Thai localization and regression tests moved together under `Launcher-Server/` (no website port or feature changes).
+- Portable EXE sources, tests, documentation, build scripts and output collected under `Portable/`.
+- Portable Python builder updated for the new directory layout; no runtime selection JSON required.
+- Published bootstrap builds download original site assets only on first run; no third-party website bundles committed.
 
-### Notes
-- EXE binaries are distributed via GitHub Releases, not checked into Git history.
-- A combined downloadable ZIP can include both source folders and the ten prebuilt EXEs.
-- Python runtime/site asset regression tests passed locally; rebuilt Windows EXEs require CI smoke-tests.
+### Verification
+- Existing Portable EXEs were user-tested after the packaged identity hotfix.
+- Python regression suites and generated startup tests should pass after reorganizing paths.
+- Windows GitHub Actions will rebuild and test binaries for the new structure.
 
 ---
+# Changelog — SimulationLearning
+
+## [1.4.0] — 2026-11-24
+
+- Thai / Original switcher added for ESP32, Arduino, RoverKit, Multimeter, Protocol, DesignedToScale, RoboticsLab and ByteSizedAlgorithms.
+- 265 curated common UI strings and per-site topic dictionaries; opt-in online fallback, local cache, dynamic DOM updates, reversible switching.
+- New shared `tools/thai_runtime.py` and `localization/` folder, no original upstream app bundles.
+- Existing Moon Life Thai runtime left unchanged.
+- Approved for release to `main`; original site assets excluded from source control.
 
 # Changelog
 
-## [Unreleased] — feature/portable-exe-all-sites (2026-11-24)
-
-### Added (development only)
-- Windows Portable EXE launcher with GUI controller, loopback local HTTP server, automatic browser opening, and persistent per-user AppData.
-- Two packaging modes for all 10 sites: Bootstrap EXE (download public website assets on first run) and optional Embedded EXE (bundles a validated local site cache).
-- Single-file PyInstaller builder, Windows BAT commands, portable regression tests, Windows Actions build matrix, QA checklist, and release documentation.
-- Verified cache-slot reuse on first run without bulk rename/copy, maintaining Thai UI, Moon Life, and ESP32 Labs subfolder handling.
-
-### Notes
-- Branch only. Existing stable main remains v1.5.0.
-- Bootstrap EXEs do not redistribute third-party assets. Embedded EXEs require separate permission checks before redistribution.
-- Windows binary build and real-browser compatibility must be confirmed before stable merge.
-
-
 This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, not changes to the original third-party websites. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [1.5.0] - 2026-11-24
+## [1.3.0] — Approved stable · 2026-11-24
 
-### Added
-- ESP32 Labs (ESP32-S3 Bench Guide) as website #10 on port 8130 at `/esp-labs/#/?lang=en`.
-- Source-subpath-aware mirror, local launcher, update/check commands, Thai dictionary, and 26 fixture tests.
-- Integrated ESP32Labs into Launch/Update/Check All and updated release documentation.
+- Added Project Moon Life on port 8129, with an independent Thai translation overlay, optional online translation and cached results.
+- Updated release docs, launchers and port range to 8121–8129.
+- Source-site game assets remain untracked.
 
-### Fixed
-- Approved Windows hotfix rc.3: first launch serves a validated staging cache directly without copying/renaming the 583 downloaded files.
-- New cache slot selection with `site.__active__.json` and update rollback preserving the previous verified cache.
-- Git exclusions for the new cache slots and marker files.
+## [1.2.0] — Approved stable · 2026-11-24
 
-### Verification
-- User approved rc.3 for stable integration; 26/26 ESP32 Labs local fixture tests passed.
-- Actual browser parity, 3D assets, all 32 labs, offline behavior and complete Thai translations require verification on the target PC.
-- Original website JavaScript/CSS and media bundles are not committed.
-
-## [1.4.0] - 2026-11-24
-
-### Added
-- Thai / Original language switcher for eight learning sites: ESP32 (8121), Arduino (8122), RoverKit (8123), Multimeter (8124), Protocol Explorer (8125), Designed to Scale (8126), Robotics Lab (8127), and Byte-Sized Algorithms (8128).
-- Shared localization runtime, 265 common Thai UI translations plus site-specific dictionaries, dynamic DOM label updates, and reversible language selection.
-- Per-site persistent language preferences, optional online translation of previously unknown text, and locally cached translations.
-- `Check_Thai_UI.bat`, site documentation, and localization regression tests.
-
-### Changed
-- Updated README, release documentation, and toolkit/runtime versions to `1.4.0`.
-- Preserved Moon Life (8129) Thai support, all original ports, and shared local-mirroring behavior.
-
-### Notes
-- Online translation is disabled by default; activating it may send visible text to Google Translate.
-- Original third-party website bundles remain excluded from the repository.
-- Local regression suite passed 40/40 tests; full-browser visual parity and every translation require user validation.
-
-## [1.3.0] - 2026-11-24
-
-### Added
-- **Project Moon Life / Born as an Individual in the City** as website #9 on port `8129` with local Launcher, Update, Check and Cache management.
-- Display-only Thai language overlay with **249** built-in translations, TH / Original switching, and optional dynamic story translation through a local endpoint with persistent local cache.
-- `tools/moon_runtime.py` for localized HTML injection and local translation service; `tests/test_moonlife.py` and project test results.
-- Moon Life integration in `Launch_All.bat`, `Update_All.bat` and `Check_All.bat`.
-
-### Changed
-- Updated README, version metadata, shared runtime version and release notes to `1.3.0`.
-- Added translation cache to `.gitignore`; original game assets and story scripts remain excluded from the repository.
-
-### Verification
-- User approved the preview for stable integration.
-- 12/12 local fixture tests passed for launcher, mirroring, HTML overlay, translation API, cache, server restart and rollback.
-- Visual parity, complete Thai translations and real online game/translation behavior require browser verification on the target machine.
-
-## [1.2.0] - 2026-11-24
-
-### Added
-- Byte-Sized Algorithms (Algo Lab) as website #8 on port `8128` and route `/#/big-o/1`.
-- Standard launcher, updater, validator, configuration, bilingual guide and offline fixture tests.
-- Added the eighth website to `Launch_All.bat`, `Update_All.bat` and `Check_All.bat`.
-
-### Changed
-- Updated root README, release notes, toolkit version and shared runtime version to `1.2.0`.
-
-### Notes
-- User-approved integration into the stable repository.
-- No original website JS/CSS/content bundles are committed.
-- Visual fidelity, animations, and offline functionality need independent browser testing.
+- Added Byte-Sized Algorithms on port 8128, with dedicated launcher, updater and checker.
+- Updated README, changelog, shared runtime version and all-site launchers.
 
 ## [1.1.0] - 2026-11-23
 
 ### Added
-- Robotics Lab as website #7 with a dedicated launcher at `http://127.0.0.1:8127/#uno`.
-- Standard `Launcher.bat`, `Update_Clone.bat`, `Check_Clone.bat`, Python entrypoints and source configuration.
-- Added Robotics Lab to the global Launch/Update/Check scripts.
-- Added a board/WebGL/Workbench/Quiz/Assembly validation checklist and local fixture tests.
+- Added **Robotics Lab** as the seventh local simulation website (`RoboticsLab/`), using `http://127.0.0.1:8127/#uno`.
+- Added the same launcher, updater, validator and Python entrypoints used by the six existing sites.
+- Included Robotics Lab in the root `Launch_All.bat`, `Update_All.bat`, and `Check_All.bat` commands.
+- Added a WebGL/Workbench/Quiz/Assembly verification checklist and local fixture regression test.
 
 ### Changed
-- Updated bilingual README, project layout, release notes and version metadata.
-- Bumped shared runtime version to `1.1.0` without changing mirror functionality.
+- Updated bilingual README, project layout, version metadata and release guide for seven websites.
+- Bumped shared runtime version to `1.1.0` without changing existing mirroring behavior.
 
 ### Notes
-- Approved by the user for repository integration.
-- Original website JavaScript, CSS, 3D models and other third-party assets remain excluded from Git.
-- Automated tests cover infrastructure only; actual visual parity still requires browser testing.
+- Robotics Lab was approved by the user for integration into the GitHub repository.
+- Upstream JavaScript/CSS, 3D models and other third-party assets remain excluded from Git.
+- Actual visual parity and all browser-only features require testing on the user’s Windows PC.
 
 ## [1.0.0] - 2026-11-23
 
@@ -136,6 +96,20 @@ This changelog tracks **SimulationLearning's local launcher/mirror toolkit**, no
 ### Notes
 - Public third-party website assets are **not** committed. They are retrieved by users directly from the original websites.
 - Online first-run mirroring and full visual parity have not been verified for all sites in this execution environment.
+
+## [Unreleased] — feature/portable-exe-all-sites (2026-11-24)
+
+### Added (development only)
+- Portable Windows EXE launcher with background localhost server, automatic browser opening, Tk control window and persistent AppData.
+- Two packaging modes: small Bootstrap EXE (downloads original website assets on first launch) and optional Embedded EXE (bundles validated local assets).
+- One-file PyInstaller build tooling for all ten websites, Windows build batch script, local QA checklist, cross-platform fixtures and matrix GitHub Actions Windows builds.
+- Cache-slot recovery without copying or renaming hundreds of original website files, retaining Thai UI, Moon Life and ESP32 Labs path handling.
+
+### Notes
+- Main branch remains v1.5.0 until explicit validation and merge.
+- Do not publish embedded third-party website assets without permission.
+- Windows EXEs and real-browser functionality require validation on Windows before a stable release.
+
 
 ## [Unreleased]
 - No changes yet.

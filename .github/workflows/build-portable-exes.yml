@@ -1,4 +1,4 @@
-name: Build Portable Windows EXEs (10 websites)
+name: Build Portable Windows EXEs (11 websites)
 
 on:
   push:
@@ -14,17 +14,23 @@ permissions:
 
 jobs:
   validate:
-    name: Validate Launcher and Portable
+    name: Validate launcher and portable source
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Test source and portable runtimes
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Python regression tests (offline fixtures)
         run: |
           python -m unittest discover -s Launcher-Server/tests -v
           python -m unittest discover -s Portable/tests -v
+      - name: Native portable Go tests (offline fixtures)
+        working-directory: Portable/HowItsWired
+        run: go test -v ./...
 
   build:
     name: EXE · ${{ matrix.project }}
@@ -33,19 +39,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [ESP32, Arduino, RoverKit, Multimeter, Protocol, DesignedToScale, RoboticsLab, ByteSizedAlgorithms, MoonLife, ESP32Labs]
+        project:
+          - ESP32
+          - Arduino
+          - RoverKit
+          - Multimeter
+          - Protocol
+          - DesignedToScale
+          - RoboticsLab
+          - ByteSizedAlgorithms
+          - MoonLife
+          - ESP32Labs
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x64
-      - name: Install PyInstaller
+      - name: Install Windows one-file build tool
         run: python -m pip install "pyinstaller>=6,<7"
-      - name: Build bootstrap EXE
+      - name: Build original 10 Bootstrap EXEs
         shell: pwsh
         run: python Portable/build_portable.py --site "${{ matrix.project }}" --mode bootstrap
-      - name: Smoke test actual frozen EXE
+      - name: Smoke-test built EXE (startup identity + bundled files)
         shell: pwsh
         run: |
           $project = "${{ matrix.project }}"
@@ -53,14 +69,13 @@ jobs:
           $output = Join-Path $env:RUNNER_TEMP ("portable-smoke-" + $project + ".json")
           $process = Start-Process -FilePath $exe -ArgumentList "--self-test-output `"$output`"" -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "EXE startup smoke-test failed: $project" }
-          if (-not (Test-Path -LiteralPath $output)) { throw "EXE did not create smoke-test output: $project" }
-          $result = Get-Content -LiteralPath $output -Raw | ConvertFrom-Json
+          if (-not (Test-Path $output)) { throw "EXE did not create test report" }
+          $result = Get-Content $output -Raw | ConvertFrom-Json
           if (-not $result.ok -or -not $result.frozen -or $result.project -ne $project -or $result.mode -ne "bootstrap") {
-            throw "EXE project/resources mismatch: $project"
+            throw "EXE identity/resources mismatch: $project"
           }
-          if ($result.missing.Count -ne 0) { throw "EXE missing bundled assets: $project" }
-          Write-Host "PASS: frozen EXE $project"
-      - name: Upload standalone Windows EXE
+          if ($result.missing.Count -ne 0) { throw "EXE bundled resources missing: $project" }
+      - name: Upload original Windows EXE
         uses: actions/upload-artifact@v4
         with:
           name: SimulationLearning-${{ matrix.project }}-Portable-EXE
@@ -68,25 +83,60 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  build-howitswired:
+    name: EXE · HowItsWired (Go native)
+    needs: validate
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - name: Build self-contained Windows EXE
+        shell: pwsh
+        working-directory: Portable/HowItsWired
+        run: |
+          $env:GOOS = 'windows'
+          $env:GOARCH = 'amd64'
+          $env:CGO_ENABLED = '0'
+          go build -trimpath -ldflags '-s -w -H windowsgui' -o '../EXE/SimulationLearning-HowItsWired-8131.exe' .
+      - name: Smoke-test the actual compiled Windows EXE
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path 'Portable/EXE/SimulationLearning-HowItsWired-8131.exe').Path
+          $out = Join-Path $env:RUNNER_TEMP 'howitswired-smoke.json'
+          $p = Start-Process -FilePath $exe -ArgumentList "--self-test-output `"$out`"" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'HowItsWired EXE failed startup smoke test' }
+          if (-not (Test-Path -LiteralPath $out)) { throw 'No startup self-test output' }
+          $result = Get-Content $out -Raw | ConvertFrom-Json
+          if (-not $result.ok -or -not $result.frozen -or $result.project -ne 'HowItsWired' -or $result.port -ne 8131 -or $result.mode -ne 'bootstrap' -or $result.missing.Count -ne 0) {
+            throw ('HowItsWired EXE resources/identity mismatch: ' + ($result | ConvertTo-Json -Compress))
+          }
+      - name: Upload standalone Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: SimulationLearning-HowItsWired-Portable-EXE
+          path: Portable/EXE/SimulationLearning-HowItsWired-8131.exe
+          if-no-files-found: error
+          retention-days: 14
+
   publish:
-    name: Publish ten EXEs as GitHub Release
+    name: Publish release (11 EXEs)
     if: github.ref == 'refs/heads/main'
-    needs: build
+    needs: [build, build-howitswired]
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           pattern: SimulationLearning-*-Portable-EXE
           path: Portable/EXE
           merge-multiple: true
-      - name: Validate and bundle files
-        run: python Portable/package_exes.py --directory Portable/EXE --output Portable/SimulationLearning_Portable_10_EXEs.zip
-      - name: Upload binaries to Release
+      - name: Validate and bundle all 11 EXEs
+        run: python Portable/package_exes.py --directory Portable/EXE --output Portable/SimulationLearning_Portable_11_EXEs.zip
+      - name: Publish binaries as Release assets
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
@@ -94,19 +144,6 @@ jobs:
           set -euo pipefail
           tag="v$(tr -d '\r\n' < VERSION)"
           if ! gh release view "$tag" >/dev/null 2>&1; then
-            gh release create "$tag" --target "$GITHUB_SHA" --title "SimulationLearning $tag" --notes "Ten Windows bootstrap EXEs (original site assets download on first run)."
+            gh release create "$tag" --target "$GITHUB_SHA" --title "SimulationLearning $tag" --notes "11 Windows bootstrap EXEs. Public website assets are not bundled; first launch requires internet."
           fi
-          gh release upload "$tag" Portable/EXE/*.exe Portable/SimulationLearning_Portable_10_EXEs.zip --clobber
-      - name: Delete superseded feature branch when safely merged
-        shell: bash
-        run: |
-          set -euo pipefail
-          old="feature/portable-exe-all-sites"
-          if git ls-remote --exit-code --heads origin "$old" >/dev/null 2>&1; then
-            git fetch origin "refs/heads/$old:refs/remotes/origin/$old"
-            if git merge-base --is-ancestor "origin/$old" "$GITHUB_SHA"; then
-              git push origin --delete "$old"
-            else
-              echo "Feature branch contains new work; preserving it."
-            fi
-          fi
+          gh release upload "$tag" Portable/EXE/*.exe Portable/SimulationLearning_Portable_11_EXEs.zip --clobber

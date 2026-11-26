@@ -1,14 +1,10 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
-echo ===================================================
-echo SimulationLearning - Portable EXE Builder (10 sites)
-echo ===================================================
-echo.
-echo Requirement: Windows + Python + internet on build PC.
-echo Output: EXE\SimulationLearning-*-*.exe
-echo No Python is required on recipient PCs.
-echo Websites download on FIRST RUN on recipient PC.
+echo ======================================================
+echo SimulationLearning - Portable Builder - 11 websites
+ echo Ten legacy EXEs use PyInstaller, HowItsWired uses Go.
+echo ======================================================
 echo.
 where py >nul 2>&1
 if not errorlevel 1 (
@@ -16,7 +12,7 @@ if not errorlevel 1 (
 ) else (
   where python >nul 2>&1
   if errorlevel 1 (
-    echo [ERROR] Python is required on this BUILD PC only.
+    echo [ERROR] Python missing on the BUILD PC.
     pause
     exit /b 1
   )
@@ -24,21 +20,29 @@ if not errorlevel 1 (
 )
 %PY% -m PyInstaller --version >nul 2>&1
 if errorlevel 1 (
-  echo Installing PyInstaller on BUILD PC only...
   %PY% -m pip install "pyinstaller>=6,<7"
-  if errorlevel 1 (
-    echo [ERROR] Could not install PyInstaller.
-    pause
-    exit /b 1
-  )
+  if errorlevel 1 (pause & exit /b 1)
 )
 %PY% build_portable.py --all --mode bootstrap
-set "CODE=%errorlevel%"
-echo.
-if not "%CODE%"=="0" (
-  echo [WARN] Some EXEs could not be built. Review output and retry.
-) else (
-  echo [OK] Check EXE for 10 standalone EXE files.
+if errorlevel 1 (
+ echo [ERROR] The first 10 EXE builds failed.
+ pause
+ exit /b 1
 )
+where go >nul 2>&1
+if errorlevel 1 (
+ echo [ERROR] Go 1.23+ is needed on the BUILD PC for HowItsWired.
+ echo Download from https://go.dev/dl/
+ pause
+ exit /b 1
+)
+set "SIM_BUILD_NO_PAUSE=1"
+call "%~dp0HowItsWired\Build_Windows_EXE.bat"
+if errorlevel 1 (
+ echo [ERROR] HowItsWired EXE build failed.
+ pause
+ exit /b 1
+)
+echo [OK] All 11 EXEs built in Portable\EXE
 pause
-exit /b %CODE%
+endlocal

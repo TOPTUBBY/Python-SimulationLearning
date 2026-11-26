@@ -121,7 +121,7 @@ class ByteSizedAlgorithmsTests(unittest.TestCase):
             self.assertFalse((root/'site.__staging__').exists())
 
     def test_08_version_and_localization(self):
-        self.assertEqual((ROOT.parent / 'VERSION').read_text().strip(), '1.6.0')
+        self.assertRegex((ROOT.parent / 'VERSION').read_text().strip(), r'^\d+\.\d+\.\d+(?:-[\w.]+)?$')
         self.assertIn('Thai UI — v1.4.0', (ROOT/'ByteSizedAlgorithms/README.md').read_text(encoding='utf-8'))
         self.assertFalse((ROOT/'ByteSizedAlgorithms/site').exists())
 

@@ -26,7 +26,7 @@ from urllib.parse import unquote, urljoin, urlsplit
 from urllib.request import Request, urlopen
 import webbrowser
 
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 HOST = "127.0.0.1"
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36"
 EXTENSIONS = {".js", ".mjs", ".css", ".json", ".svg", ".png", ".jpg", ".jpeg",

@@ -1,0 +1,11 @@
+{
+  "id": "how-its-wired",
+  "name": "How It’s Wired",
+  "description": "Interactive 3D course in electrical circuits and household wiring, 37 lessons in 7 chapters",
+  "source": "https://how-its-wired.vercel.app/",
+  "launch_path": "/lead-load",
+  "port": 8131,
+  "thai_enabled": true,
+  "thai_default": true,
+  "online_translation_default": false
+}

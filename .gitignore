@@ -2,12 +2,6 @@
 **/site/
 **/site.__staging__/
 **/site.__backup__/
-**/site.__next__/
-**/site.__active__.json
-**/site.__active__.json.tmp
-
-# Translation cache may contain displayed game data; keep it on the user machine only.
-**/translation_cache.json
 
 # Python/OS/logs
 __pycache__/
@@ -20,16 +14,24 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Portable EXE build outputs
-build/
+# Portable EXE build artifacts (do not commit Windows binaries or staging)
 dist/
+build/
 *.spec
 **/site.__next__/
 **/site.__active__.json
 
-# EXE binaries live in GitHub Releases rather than Git history
+# Portable binary output is distributed via GitHub Releases instead of Git history
 Portable/EXE/*.exe
 Portable/EXE/*.zip
 Portable/EXE/*.json
 Portable/build/
 Portable/*.zip
+
+# HowItsWired verified cache slot selection
+**/.active-cache.json
+**/.active-cache.json.tmp
+
+# HowItsWired verified cache slot selection
+**/.active-cache.json
+**/.active-cache.json.tmp
